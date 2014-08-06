@@ -1,94 +1,66 @@
-'use strict'
+import 'traceur'
 
-var async = require('async')
-var should = require('should')
-var copyObject = require('quiver-copy').copyObject
-var moduleLib = require('quiver-module')
-var configLib = require('quiver-config')
-var componentLib = require('quiver-component')
-var simpleHandlerLib = require('quiver-simple-handler')
+import { async } from 'quiver-promise'
+import { simpleHandler, simpleHandlerBuilder } from 'quiver-component'
 
-var cacheComponent = require('../lib/cache-component')
+import { abstractMemoryCacheFilter } from '../lib/cache-component.js'
 
-var quiverComponents = moduleLib.loadComponentsFromQuiverModule(
-  cacheComponent.quiverModule)
+var chai = require('chai')
+var chaiAsPromised = require('chai-as-promised')
 
-var testHandleableBuilder = function(config, callback) {
-  var counter = 0
-  var resultTable = { }
+chai.use(chaiAsPromised)
+var should = chai.should()
+var expect = chai.expect
 
-  var testHandler = function(args, callback) {
-    var itemId = args.itemId
+describe('cache filter test', () => {
+  var getCacheId = simpleHandler(args => args.id, 'void', 'text')
 
-    resultTable[itemId] = counter++
-    callback(null, ''+resultTable[itemId])
-  }
+  var counter = simpleHandlerBuilder(
+  config => {
+    var table = { }
 
-  var cacheIdHandler = function(args, callback) {
-    callback(null, args.itemId)
-  }
+    return args => {
+      var { id } = args
 
-  var handleable = {
-    toStreamHandler: function() {
-      return simpleHandlerLib.simpleHandlerToStreamHandler(
-        'void', 'text', testHandler)
-    },
-    toCacheIdHandler: function() {
-      return simpleHandlerLib.simpleHandlerToStreamHandler(
-        'void', 'text', cacheIdHandler)
+      var count = table[id] || 0
+      count++
+
+      table[id] = count
+      return id + '-' + count
     }
-  }
+  }, 'void', 'text')
 
-  callback(null, handleable)
-}
+  it('sanity test', async(function*() {
+    var handler = yield counter.loadHandler({})
 
-quiverComponents.push({
-  name: 'test handler',
-  type: 'handleable',
-  middlewares: [
-    'quiver memory cache filter'
-  ],
-  handlerBuilder: testHandleableBuilder
-})
+    yield handler({id: 'foo'})
+      .should.eventually.equal('foo-1')
 
-describe('cache component test', function() {
-  var componentConfig
+    yield handler({id: 'foo'})
+      .should.eventually.equal('foo-2')
 
-  before(function(callback) {
-    componentLib.installComponents(quiverComponents, function(err, config) {
-      if(err) return callback(err)
+    yield handler({id: 'bar'})
+      .should.eventually.equal('bar-1')
+  }))
 
-      componentConfig = config
-      callback()
-    })
-  })
+  it('memory cache test', async(function*() {
+    var cacheFilter = abstractMemoryCacheFilter({getCacheId})
 
-  it('memory cache filter test', function(callback) {
-    var config = copyObject(componentConfig)
+    var cachedCounter = counter.makePrivate()
+      .addMiddleware(cacheFilter)
 
-    configLib.loadSimpleHandler(config, 'test handler', 'void', 'json',
-    function(err, handler) {
-      if(err) return callback(err)
-      
-      var testResult = function(itemId, expected) {
-        return function(callback) {
-          handler({ itemId: itemId }, function(err, result) {
-            if(err) return callback(err)
-            
-            should.equal(result, expected)
-            callback()
-          })
-        }
-      }
+    var handler = yield cachedCounter.loadHandler({})
 
-      async.series([
-        testResult('foo', '0'),
-        testResult('foo', '0'),
-        testResult('bar', '1'),
-        testResult('foo', '0'),
-        testResult('baz', '2'),
-        testResult('bar', '1'),
-      ], callback)
-    })
-  })
+    yield handler({id: 'foo'})
+      .should.eventually.equal('foo-1')
+
+    yield handler({id: 'foo'})
+      .should.eventually.equal('foo-1')
+
+    yield handler({id: 'bar'})
+      .should.eventually.equal('bar-1')
+
+    yield handler({id: 'bar'})
+      .should.eventually.equal('bar-1')
+  }))
 })
