@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperties(exports, {
-  memoryCacheStore: {get: function() {
-      return memoryCacheStore;
+  memoryCacheStoreBundle: {get: function() {
+      return memoryCacheStoreBundle;
     }},
   getCacheEntry: {get: function() {
       return getCacheEntry;
@@ -27,7 +27,7 @@ var $__0 = $traceurRuntime.assertObject(require('quiver-component')),
     handleableBuilder = $__0.handleableBuilder,
     streamHandlerBuilder = $__0.streamHandlerBuilder,
     partialImplement = $__0.partialImplement,
-    inputHandlerMiddleware = $__0.inputHandlerMiddleware;
+    handlerBundle = $__0.handlerBundle;
 var abstractCacheFilter = $traceurRuntime.assertObject(require('./cache-filter.js')).abstractCacheFilter;
 var inMemoryStreamable = async($traceurRuntime.initGeneratorFunction(function $__1(streamable) {
   var newStreamable,
@@ -89,34 +89,15 @@ var inMemoryStreamable = async($traceurRuntime.initGeneratorFunction(function $_
       }
   }, $__1, this);
 }));
-var memoryCacheStore = handleableBuilder((function(config) {
+var memoryCacheStoreBundle = handlerBundle((function(config) {
   var cacheStore = {};
-  var getCacheEntry = simpleToStreamHandler(async($traceurRuntime.initGeneratorFunction(function $__6(args) {
-    var cacheId;
-    return $traceurRuntime.createGeneratorInstance(function($ctx) {
-      while (true)
-        switch ($ctx.state) {
-          case 0:
-            cacheId = $traceurRuntime.assertObject(args).cacheId;
-            $ctx.state = 5;
-            break;
-          case 5:
-            $ctx.state = (cacheStore[cacheId]) ? 1 : 2;
-            break;
-          case 1:
-            $ctx.returnValue = cacheStore[cacheId];
-            $ctx.state = -2;
-            break;
-          case 2:
-            throw error(404, 'not found');
-            $ctx.state = -2;
-            break;
-          default:
-            return $ctx.end();
-        }
-    }, $__6, this);
-  })), 'void', 'streamable');
-  var setCacheEntry = simpleToStreamHandler(async($traceurRuntime.initGeneratorFunction(function $__7(args, streamable) {
+  var getCacheEntry = function(args) {
+    var cacheId = $traceurRuntime.assertObject(args).cacheId;
+    if (cacheStore[cacheId])
+      return cacheStore[cacheId];
+    return reject(error(404, 'not found'));
+  };
+  var setCacheEntry = async($traceurRuntime.initGeneratorFunction(function $__6(args, streamable) {
     var cacheId;
     return $traceurRuntime.createGeneratorInstance(function($ctx) {
       while (true)
@@ -139,19 +120,17 @@ var memoryCacheStore = handleableBuilder((function(config) {
           default:
             return $ctx.end();
         }
-    }, $__7, this);
-  })), 'streamable', 'void');
+    }, $__6, this);
+  }));
   return {
     getCacheEntry: getCacheEntry,
     setCacheEntry: setCacheEntry
   };
-}));
-var getCacheEntry = streamHandlerBuilder((function(config) {
-  return config.memoryCacheStore.getCacheEntry;
-})).addMiddleware(inputHandlerMiddleware(memoryCacheStore, 'memoryCacheStore'));
-var setCacheEntry = streamHandlerBuilder((function(config) {
-  return config.memoryCacheStore.setCacheEntry;
-})).addMiddleware(inputHandlerMiddleware(memoryCacheStore, 'memoryCacheStore'));
+})).simpleHandler('getCacheEntry', 'void', 'streamable').simpleHandler('setCacheEntry', 'streamable', 'void');
+var $__0 = $traceurRuntime.assertObject(memoryCacheStoreBundle.handlerComponents),
+    getCacheEntry = $__0.getCacheEntry,
+    setCacheEntry = $__0.setCacheEntry;
+;
 var abstractMemoryCacheFilter = partialImplement(abstractCacheFilter, {
   getCacheEntry: getCacheEntry,
   setCacheEntry: setCacheEntry
