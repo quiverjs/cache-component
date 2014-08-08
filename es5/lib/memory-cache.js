@@ -9,8 +9,11 @@ Object.defineProperties(exports, {
   setCacheEntry: {get: function() {
       return setCacheEntry;
     }},
-  abstractMemoryCacheFilter: {get: function() {
-      return abstractMemoryCacheFilter;
+  removeCacheEntry: {get: function() {
+      return removeCacheEntry;
+    }},
+  makeMemoryCacheFilters: {get: function() {
+      return makeMemoryCacheFilters;
     }},
   __esModule: {value: true}
 });
@@ -28,7 +31,7 @@ var $__0 = $traceurRuntime.assertObject(require('quiver-component')),
     streamHandlerBuilder = $__0.streamHandlerBuilder,
     partialImplement = $__0.partialImplement,
     handlerBundle = $__0.handlerBundle;
-var abstractCacheFilter = $traceurRuntime.assertObject(require('./cache-filter.js')).abstractCacheFilter;
+var makeCacheFilters = $traceurRuntime.assertObject(require('./cache-filter.js')).makeCacheFilters;
 var inMemoryStreamable = async($traceurRuntime.initGeneratorFunction(function $__1(streamable) {
   var newStreamable,
       $__2,
@@ -91,12 +94,12 @@ var inMemoryStreamable = async($traceurRuntime.initGeneratorFunction(function $_
 }));
 var memoryCacheStoreBundle = handlerBundle((function(config) {
   var cacheStore = {};
-  var getCacheEntry = function(args) {
+  var getCacheEntry = (function(args) {
     var cacheId = $traceurRuntime.assertObject(args).cacheId;
     if (cacheStore[cacheId])
       return cacheStore[cacheId];
     return reject(error(404, 'not found'));
-  };
+  });
   var setCacheEntry = async($traceurRuntime.initGeneratorFunction(function $__6(args, streamable) {
     var cacheId;
     return $traceurRuntime.createGeneratorInstance(function($ctx) {
@@ -122,16 +125,23 @@ var memoryCacheStoreBundle = handlerBundle((function(config) {
         }
     }, $__6, this);
   }));
+  var removeCacheEntry = (function(args) {
+    var cacheId = $traceurRuntime.assertObject(args).cacheId;
+    cacheStore[cacheId] = null;
+  });
   return {
     getCacheEntry: getCacheEntry,
-    setCacheEntry: setCacheEntry
+    setCacheEntry: setCacheEntry,
+    removeCacheEntry: removeCacheEntry
   };
-})).simpleHandler('getCacheEntry', 'void', 'streamable').simpleHandler('setCacheEntry', 'streamable', 'void');
+})).simpleHandler('getCacheEntry', 'void', 'streamable').simpleHandler('setCacheEntry', 'streamable', 'void').simpleHandler('removeCacheEntry', 'void', 'void');
 var $__0 = $traceurRuntime.assertObject(memoryCacheStoreBundle.handlerComponents),
     getCacheEntry = $__0.getCacheEntry,
-    setCacheEntry = $__0.setCacheEntry;
+    setCacheEntry = $__0.setCacheEntry,
+    removeCacheEntry = $__0.removeCacheEntry;
 ;
-var abstractMemoryCacheFilter = partialImplement(abstractCacheFilter, {
+var makeMemoryCacheFilters = partialImplement(makeCacheFilters, {
   getCacheEntry: getCacheEntry,
-  setCacheEntry: setCacheEntry
+  setCacheEntry: setCacheEntry,
+  removeCacheEntry: removeCacheEntry
 });

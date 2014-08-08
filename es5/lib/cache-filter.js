@@ -1,7 +1,10 @@
 "use strict";
 Object.defineProperties(exports, {
-  abstractCacheFilter: {get: function() {
-      return abstractCacheFilter;
+  cacheStoreProtocol: {get: function() {
+      return cacheStoreProtocol;
+    }},
+  makeCacheFilters: {get: function() {
+      return makeCacheFilters;
     }},
   __esModule: {value: true}
 });
@@ -10,10 +13,36 @@ var async = $traceurRuntime.assertObject(require('quiver-promise')).async;
 var reuseStreamable = $traceurRuntime.assertObject(require('quiver-stream-util')).reuseStreamable;
 var $__0 = $traceurRuntime.assertObject(require('quiver-component')),
     abstractComponent = $__0.abstractComponent,
+    protocol = $__0.protocol,
     streamFilter = $__0.streamFilter,
-    protocol = $__0.protocol;
-var cacheProtocol = protocol('cacheProtocol').simpleHandler('getCacheId', 'void', 'text').simpleHandler('getCacheEntry', 'void', 'streamable').simpleHandler('setCacheEntry', 'streamable', 'void');
-var abstractCacheFilter = abstractComponent('cacheProtocol', cacheProtocol, streamFilter((function(config, handler) {
+    argsBuilderFilter = $__0.argsBuilderFilter;
+var cacheStoreProtocol = protocol('cacheProtocol').simpleHandler('getCacheId', 'void', 'text').simpleHandler('getCacheEntry', 'void', 'streamable').simpleHandler('setCacheEntry', 'streamable', 'void').simpleHandler('removeCacheEntry', 'void', 'void');
+var _cacheId = Symbol('cacheId');
+var cacheIdFilter = argsBuilderFilter((function(config) {
+  var cacheProtocol = $traceurRuntime.assertObject(config).cacheProtocol;
+  var getCacheId = $traceurRuntime.assertObject(cacheProtocol).getCacheId;
+  return async($traceurRuntime.initGeneratorFunction(function $__1(args) {
+    return $traceurRuntime.createGeneratorInstance(function($ctx) {
+      while (true)
+        switch ($ctx.state) {
+          case 0:
+            $ctx.state = 2;
+            return getCacheId(copy(args));
+          case 2:
+            args[_cacheId] = $ctx.sent;
+            $ctx.state = 4;
+            break;
+          case 4:
+            $ctx.returnValue = args;
+            $ctx.state = -2;
+            break;
+          default:
+            return $ctx.end();
+        }
+    }, $__1, this);
+  }));
+}));
+var makeCacheFilter = abstractComponent('cacheProtocol', cacheStoreProtocol, streamFilter((function(config, handler) {
   var cacheProtocol = $traceurRuntime.assertObject(config).cacheProtocol;
   var $__0 = $traceurRuntime.assertObject(cacheProtocol),
       getCacheId = $__0.getCacheId,
@@ -28,81 +57,59 @@ var abstractCacheFilter = abstractComponent('cacheProtocol', cacheProtocol, stre
       while (true)
         switch ($ctx.state) {
           case 0:
+            cacheId = args[_cacheId];
+            $ctx.state = 27;
+            break;
+          case 27:
             $ctx.pushTry(7, null);
             $ctx.state = 10;
             break;
           case 10:
             $ctx.state = 2;
-            return getCacheId(copy(args));
+            return getCacheEntry({cacheId: cacheId});
           case 2:
-            cacheId = $ctx.sent;
+            cachedResult = $ctx.sent;
             $ctx.state = 4;
             break;
           case 4:
+            $ctx.returnValue = cachedResult;
+            $ctx.state = -2;
+            break;
+          case 6:
             $ctx.popTry();
             $ctx.state = 12;
             break;
           case 7:
             $ctx.popTry();
             err = $ctx.storedException;
-            $ctx.state = 5;
+            $ctx.state = 13;
             break;
-          case 5:
-            $ctx.returnValue = handler(args, inputStreamable);
-            $ctx.state = -2;
+          case 13:
+            if (err.errorCode != 404)
+              throw err;
+            $ctx.state = 12;
             break;
           case 12:
-            $ctx.pushTry(23, null);
-            $ctx.state = 26;
-            break;
-          case 26:
-            $ctx.state = 15;
-            return getCacheEntry({cacheId: cacheId});
-          case 15:
-            cachedResult = $ctx.sent;
             $ctx.state = 17;
-            break;
+            return handler(args, inputStreamable);
           case 17:
-            $ctx.returnValue = cachedResult;
-            $ctx.state = -2;
+            resultStreamable = $ctx.sent;
+            $ctx.state = 19;
             break;
           case 19:
-            $ctx.popTry();
-            $ctx.state = 28;
+            $ctx.state = 21;
+            return reuseStreamable(resultStreamable);
+          case 21:
+            resultStreamable = $ctx.sent;
+            $ctx.state = 23;
             break;
           case 23:
-            $ctx.popTry();
-            err = $ctx.storedException;
-            $ctx.state = 22;
-            break;
-          case 22:
-            $ctx.state = (err.errorCode != 404) ? 20 : 28;
-            break;
-          case 20:
-            $ctx.returnValue = handler(args, inputStreamable);
-            $ctx.state = -2;
-            break;
-          case 28:
-            $ctx.state = 31;
-            return handler(args, inputStreamable);
-          case 31:
-            resultStreamable = $ctx.sent;
-            $ctx.state = 33;
-            break;
-          case 33:
-            $ctx.state = 35;
-            return reuseStreamable(resultStreamable);
-          case 35:
-            resultStreamable = $ctx.sent;
-            $ctx.state = 37;
-            break;
-          case 37:
             try {
               setCacheEntry({cacheId: cacheId}, resultStreamable);
             } catch (err) {}
-            $ctx.state = 41;
+            $ctx.state = 29;
             break;
-          case 41:
+          case 29:
             $ctx.returnValue = resultStreamable;
             $ctx.state = -2;
             break;
@@ -111,4 +118,46 @@ var abstractCacheFilter = abstractComponent('cacheProtocol', cacheProtocol, stre
         }
     }, $__1, this);
   }));
-}), {name: 'Quiver Cache Filter'}));
+})).addMiddleware(cacheIdFilter));
+var makeCacheInvalidationFilter = abstractComponent('cacheProtocol', cacheStoreProtocol, argsBuilderFilter((function(config) {
+  var cacheProtocol = $traceurRuntime.assertObject(config).cacheProtocol;
+  var removeCacheEntry = $traceurRuntime.assertObject(cacheProtocol).removeCacheEntry;
+  return async($traceurRuntime.initGeneratorFunction(function $__1(args) {
+    var cacheId;
+    return $traceurRuntime.createGeneratorInstance(function($ctx) {
+      while (true)
+        switch ($ctx.state) {
+          case 0:
+            cacheId = args[_cacheId];
+            $ctx.state = 8;
+            break;
+          case 8:
+            $ctx.state = 2;
+            return removeCacheEntry({cacheId: cacheId});
+          case 2:
+            $ctx.maybeThrow();
+            $ctx.state = 4;
+            break;
+          case 4:
+            args[_cacheId] = null;
+            $ctx.state = 10;
+            break;
+          case 10:
+            $ctx.returnValue = args;
+            $ctx.state = -2;
+            break;
+          default:
+            return $ctx.end();
+        }
+    }, $__1, this);
+  }));
+})).addMiddleware(cacheIdFilter));
+var makeCacheFilters = (function(impl) {
+  var privateTable = arguments[1] !== (void 0) ? arguments[1] : {};
+  var cacheFilter = makeCacheFilter(impl, privateTable);
+  var cacheInvalidationFilter = makeCacheInvalidationFilter(impl, privateTable);
+  return {
+    cacheFilter: cacheFilter,
+    cacheInvalidationFilter: cacheInvalidationFilter
+  };
+});

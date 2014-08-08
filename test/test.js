@@ -1,9 +1,12 @@
 import 'traceur'
 
 import { async } from 'quiver-promise'
-import { simpleHandler, simpleHandlerBuilder } from 'quiver-component'
+import { 
+  simpleHandler, simpleHandlerBuilder,
+  handlerBundle
+} from 'quiver-component'
 
-import { abstractMemoryCacheFilter } from '../lib/cache-component.js'
+import { makeMemoryCacheFilters } from '../lib/cache-component.js'
 
 var chai = require('chai')
 var chaiAsPromised = require('chai-as-promised')
@@ -15,11 +18,11 @@ var expect = chai.expect
 describe('cache filter test', () => {
   var getCacheId = simpleHandler(args => args.id, 'void', 'text')
 
-  var counter = simpleHandlerBuilder(
+  var counterBundle = handlerBundle(
   config => {
     var table = { }
 
-    return args => {
+    var increment = args => {
       var { id } = args
 
       var count = table[id] || 0
@@ -28,39 +31,86 @@ describe('cache filter test', () => {
       table[id] = count
       return id + '-' + count
     }
-  }, 'void', 'text')
+
+    var reset = args => {
+      var { id, count=0 } = args
+
+      table[id] = count
+    }
+
+    return { 
+      increment, reset
+    }
+  })
+  .simpleHandler('increment', 'void', 'text')
+  .simpleHandler('reset', 'void', 'void')
+
+  var { increment, reset } = counterBundle.handlerComponents
 
   it('sanity test', async(function*() {
-    var handler = yield counter.loadHandler({})
+    var config = { }
 
-    yield handler({id: 'foo'})
+    var counterHandler = yield increment.loadHandler(config)
+    var resetHandler = yield reset.loadHandler(config)
+
+    yield counterHandler({id: 'foo'})
       .should.eventually.equal('foo-1')
 
-    yield handler({id: 'foo'})
+    yield counterHandler({id: 'foo'})
       .should.eventually.equal('foo-2')
 
-    yield handler({id: 'bar'})
+    yield counterHandler({id: 'bar'})
       .should.eventually.equal('bar-1')
+
+    yield resetHandler({
+      id: 'foo',
+      count: 5
+    })
+
+    yield counterHandler({id: 'foo'})
+      .should.eventually.equal('foo-6')
+
+    yield counterHandler({id: 'bar'})
+      .should.eventually.equal('bar-2')
   }))
 
-  it('memory cache test', async(function*() {
-    var cacheFilter = abstractMemoryCacheFilter({getCacheId})
+  it.only('memory cache test', async(function*() {
+    var {
+      cacheFilter, cacheInvalidationFilter 
+    } = makeMemoryCacheFilters({getCacheId})
 
-    var cachedCounter = counter.makePrivate()
-      .addMiddleware(cacheFilter)
+    var { increment, reset } = counterBundle.makePrivate()
+      .handlerComponents
 
-    var handler = yield cachedCounter.loadHandler({})
+    increment.addMiddleware(cacheFilter)
+    reset.addMiddleware(cacheInvalidationFilter)
 
-    yield handler({id: 'foo'})
+    var config = { }
+
+    var counterHandler = yield increment.loadHandler(config)
+    var resetHandler = yield reset.loadHandler(config)
+
+    yield counterHandler({id: 'foo'})
       .should.eventually.equal('foo-1')
 
-    yield handler({id: 'foo'})
+    yield counterHandler({id: 'foo'})
       .should.eventually.equal('foo-1')
 
-    yield handler({id: 'bar'})
+    yield counterHandler({id: 'bar'})
       .should.eventually.equal('bar-1')
 
-    yield handler({id: 'bar'})
+    yield counterHandler({id: 'bar'})
+      .should.eventually.equal('bar-1')
+
+    yield resetHandler({
+      id: 'foo',
+      count: 5
+    })
+
+    yield counterHandler({id: 'foo'})
+      .should.eventually.equal('foo-6')
+
+    yield counterHandler({id: 'bar'})
       .should.eventually.equal('bar-1')
   }))
 })
