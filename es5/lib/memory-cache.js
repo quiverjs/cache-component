@@ -33,11 +33,11 @@ var $__0 = $traceurRuntime.assertObject(require('quiver-component')),
     handlerBundle = $__0.handlerBundle;
 var makeCacheFilters = $traceurRuntime.assertObject(require('./cache-filter.js')).makeCacheFilters;
 var inMemoryStreamable = async($traceurRuntime.initGeneratorFunction(function $__1(streamable) {
-  var newStreamable,
-      $__2,
+  var $__2,
       $__3,
       $__4,
-      $__5;
+      $__5,
+      $__6;
   return $traceurRuntime.createGeneratorInstance(function($ctx) {
     while (true)
       switch ($ctx.state) {
@@ -69,17 +69,17 @@ var inMemoryStreamable = async($traceurRuntime.initGeneratorFunction(function $_
           break;
         case 11:
           $__5 = reuseStream($__4);
+          $__6 = $__5.toStream;
           $ctx.state = 15;
           break;
         case 15:
           $ctx.state = 17;
-          return $__5;
+          return $__6;
         case 17:
-          newStreamable = $ctx.sent;
+          streamable.toStream = $ctx.sent;
           $ctx.state = 19;
           break;
         case 19:
-          streamable.toStream = newStreamable.toStream;
           streamable.offMemory = false;
           $ctx.state = 23;
           break;
@@ -96,11 +96,15 @@ var memoryCacheStoreBundle = handlerBundle((function(config) {
   var cacheStore = {};
   var getCacheEntry = (function(args) {
     var cacheId = $traceurRuntime.assertObject(args).cacheId;
-    if (cacheStore[cacheId])
-      return cacheStore[cacheId];
+    if (cacheStore[cacheId]) {
+      var streamable = cacheStore[cacheId];
+      if (!streamable.isClosed)
+        return streamable;
+      cacheStore[cacheId] = null;
+    }
     return reject(error(404, 'not found'));
   });
-  var setCacheEntry = async($traceurRuntime.initGeneratorFunction(function $__6(args, streamable) {
+  var setCacheEntry = async($traceurRuntime.initGeneratorFunction(function $__7(args, streamable) {
     var cacheId;
     return $traceurRuntime.createGeneratorInstance(function($ctx) {
       while (true)
@@ -123,7 +127,7 @@ var memoryCacheStoreBundle = handlerBundle((function(config) {
           default:
             return $ctx.end();
         }
-    }, $__6, this);
+    }, $__7, this);
   }));
   var removeCacheEntry = (function(args) {
     var cacheId = $traceurRuntime.assertObject(args).cacheId;
