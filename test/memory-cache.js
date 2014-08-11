@@ -16,7 +16,8 @@ var should = chai.should()
 var expect = chai.expect
 
 describe('cache filter test', () => {
-  var getCacheId = simpleHandler(args => args.id, 'void', 'text')
+  var getCacheId = simpleHandler(
+    args => args.id, 'void', 'text')
 
   var counterBundle = handlerBundle(
   config => {
@@ -74,7 +75,7 @@ describe('cache filter test', () => {
       .should.eventually.equal('bar-2')
   }))
 
-  it.only('memory cache test', async(function*() {
+  it('memory cache test', async(function*() {
     var {
       cacheFilter, cacheInvalidationFilter 
     } = makeMemoryCacheFilters({getCacheId})

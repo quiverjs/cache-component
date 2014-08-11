@@ -114,7 +114,7 @@ describe('cache filter test', (function() {
         }
     }, $__2, this);
   })));
-  it.only('memory cache test', async($traceurRuntime.initGeneratorFunction(function $__3() {
+  it('memory cache test', async($traceurRuntime.initGeneratorFunction(function $__3() {
     var $__0,
         cacheFilter,
         cacheInvalidationFilter,

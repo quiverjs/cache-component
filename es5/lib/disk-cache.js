@@ -1,22 +1,40 @@
 "use strict";
+Object.defineProperties(exports, {
+  getCacheEntry: {get: function() {
+      return getCacheEntry;
+    }},
+  setCacheEntry: {get: function() {
+      return setCacheEntry;
+    }},
+  removeCacheEntry: {get: function() {
+      return removeCacheEntry;
+    }},
+  makeDiskCacheFilters: {get: function() {
+      return makeDiskCacheFilters;
+    }},
+  __esModule: {value: true}
+});
+var joinPath = $traceurRuntime.assertObject(require('path')).join;
 var $__0 = $traceurRuntime.assertObject(require('fs')),
     rename = $__0.rename,
     symlink = $__0.symlink,
     unlink = $__0.unlink;
-var joinPath = $traceurRuntime.assertObject(require('path')).join;
 var pipeStream = $traceurRuntime.assertObject(require('quiver-stream-util')).pipeStream;
-var makeFileStatsHandler = $traceurRuntime.assertObject(require('quiver-file-component')).makeFileStatsHandler;
 var $__0 = $traceurRuntime.assertObject(require('quiver-promise')),
     async = $__0.async,
     promisify = $__0.promisify,
     reject = $__0.reject;
+var makeFileStatsHandler = $traceurRuntime.assertObject(require('quiver-file-component')).makeFileStatsHandler;
 var $__0 = $traceurRuntime.assertObject(require('quiver-file-stream')),
     fileStreamable = $__0.fileStreamable,
     fileWriteStream = $__0.fileWriteStream;
+var makeCacheFilters = $traceurRuntime.assertObject(require('./cache-filter.js')).makeCacheFilters;
 var $__0 = $traceurRuntime.assertObject(require('quiver-component')),
     handlerBundle = $__0.handlerBundle,
+    partialImplement = $__0.partialImplement,
+    argsBuilderFilter = $__0.argsBuilderFilter,
     configAliasMiddleware = $__0.configAliasMiddleware,
-    argsAliasMiddleware = $__0.argsAliasMiddleware;
+    inputHandlerMiddleware = $__0.inputHandlerMiddleware;
 var moveFile = promisify(rename);
 var linkFile = promisify(symlink);
 var removeFile = promisify(unlink);
@@ -28,7 +46,7 @@ var cachePathFilter = argsBuilderFilter((function(config) {
     return args;
   });
 }));
-var fileStatsHandler = makeFileStatsHandler().addMiddleware(configAliasMiddleware({dirPath: cacheDir}));
+var fileStatsHandler = makeFileStatsHandler().addMiddleware(configAliasMiddleware({dirPath: 'cacheDir'}));
 var diskCacheStoreBundle = handlerBundle((function(config) {
   var $__0 = $traceurRuntime.assertObject(config),
       cacheDir = $__0.cacheDir,
@@ -44,21 +62,27 @@ var diskCacheStoreBundle = handlerBundle((function(config) {
         switch ($ctx.state) {
           case 0:
             $__0 = $traceurRuntime.assertObject(args), cacheId = $__0.cacheId, cachePath = $__0.cachePath;
-            fileStats = getFileStats({path: cacheId});
-            $ctx.state = 8;
+            $ctx.state = 12;
             break;
-          case 8:
+          case 12:
             $ctx.state = 2;
-            return fileStreamable(cachePath, fileStats);
+            return getFileStats({path: cacheId});
           case 2:
-            streamable = $ctx.sent;
+            fileStats = $ctx.sent;
             $ctx.state = 4;
             break;
           case 4:
-            streamable.reusable = false;
-            $ctx.state = 10;
+            $ctx.state = 6;
+            return fileStreamable(cachePath, fileStats);
+          case 6:
+            streamable = $ctx.sent;
+            $ctx.state = 8;
             break;
-          case 10:
+          case 8:
+            streamable.reusable = false;
+            $ctx.state = 14;
+            break;
+          case 14:
             $ctx.returnValue = streamable;
             $ctx.state = -2;
             break;
@@ -155,3 +179,9 @@ var $__0 = $traceurRuntime.assertObject(diskCacheStoreBundle.handlerComponents),
     getCacheEntry = $__0.getCacheEntry,
     setCacheEntry = $__0.setCacheEntry,
     removeCacheEntry = $__0.removeCacheEntry;
+;
+var makeDiskCacheFilters = partialImplement(makeCacheFilters, {
+  getCacheEntry: getCacheEntry,
+  setCacheEntry: setCacheEntry,
+  removeCacheEntry: removeCacheEntry
+});
