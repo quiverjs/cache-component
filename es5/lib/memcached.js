@@ -1,9 +1,27 @@
 "use strict";
+Object.defineProperties(exports, {
+  memcachedStoreBundle: {get: function() {
+      return memcachedStoreBundle;
+    }},
+  abstractMemcachedCacheFilter: {get: function() {
+      return abstractMemcachedCacheFilter;
+    }},
+  abstractMemcachedCacheInvalidationFilter: {get: function() {
+      return abstractMemcachedCacheInvalidationFilter;
+    }},
+  makeMemcachedCacheFilters: {get: function() {
+      return makeMemcachedCacheFilters;
+    }},
+  __esModule: {value: true}
+});
 var $__1 = $traceurRuntime.assertObject(require('quiver-promise')),
     promisify = $__1.promisify,
     async = $__1.async;
 var streamableToBuffer = $traceurRuntime.assertObject(require('quiver-stream-util')).streamableToBuffer;
 var handlerBundle = $traceurRuntime.assertObject(require('quiver-component')).handlerBundle;
+var $__1 = $traceurRuntime.assertObject(require('./cache-filter.js')),
+    abstractCacheFilter = $__1.abstractCacheFilter,
+    abstractCacheInvalidationFilter = $__1.abstractCacheInvalidationFilter;
 var Memcached = require('memcached');
 var promisifyMethod = (function(object, method) {
   return promisify((function() {
@@ -76,7 +94,13 @@ var memcachedStoreBundle = handlerBundle((function(config) {
     removeCacheEntry: removeCacheEntry
   };
 })).simpleHandler('getCacheEntry', 'void', 'streamable').simpleHandler('setCacheEntry', 'streamable', 'void').simpleHandler('removeCacheEntry', 'void', 'void');
-var $__1 = $traceurRuntime.assertObject(diskCacheStoreBundle.handlerComponents),
-    getCacheEntry = $__1.getCacheEntry,
-    setCacheEntry = $__1.setCacheEntry,
-    removeCacheEntry = $__1.removeCacheEntry;
+var cacheComponents = memcachedStoreBundle.handlerComponents;
+var abstractMemcachedCacheFilter = abstractCacheFilter.implement(cacheComponents);
+var abstractMemcachedCacheInvalidationFilter = abstractCacheInvalidationFilter.implement(cacheComponents);
+var makeMemcachedCacheFilters = (function(implMap) {
+  var privateTable = {};
+  return {
+    cacheFilter: abstractMemcachedCacheFilter.implement(implMap, privateTable).concretize(),
+    cacheInvalidationFilter: abstractMemcachedCacheInvalidationFilter.implement(implMap, privateTable).concretize()
+  };
+});

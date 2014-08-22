@@ -3,8 +3,11 @@ Object.defineProperties(exports, {
   cacheStoreProtocol: {get: function() {
       return cacheStoreProtocol;
     }},
-  makeCacheFilters: {get: function() {
-      return makeCacheFilters;
+  abstractCacheFilter: {get: function() {
+      return abstractCacheFilter;
+    }},
+  abstractCacheInvalidationFilter: {get: function() {
+      return abstractCacheInvalidationFilter;
     }},
   __esModule: {value: true}
 });
@@ -16,7 +19,8 @@ var $__0 = $traceurRuntime.assertObject(require('quiver-component')),
     protocol = $__0.protocol,
     streamFilter = $__0.streamFilter,
     argsBuilderFilter = $__0.argsBuilderFilter;
-var cacheStoreProtocol = protocol('cacheProtocol').simpleHandler('getCacheId', 'void', 'text').simpleHandler('getCacheEntry', 'void', 'streamable').simpleHandler('setCacheEntry', 'streamable', 'void').simpleHandler('removeCacheEntry', 'void', 'void');
+var cacheIdProtocol = protocol('cache id protocol').simpleHandler('getCacheId', 'void', 'text');
+var cacheStoreProtocol = protocol('cacheProtocol').subprotocol(cacheIdProtocol).simpleHandler('getCacheEntry', 'void', 'streamable').simpleHandler('setCacheEntry', 'streamable', 'void').simpleHandler('removeCacheEntry', 'void', 'void');
 var _cacheId = Symbol('cacheId');
 var cacheIdFilter = argsBuilderFilter((function(config) {
   var cacheProtocol = $traceurRuntime.assertObject(config).cacheProtocol;
@@ -42,7 +46,7 @@ var cacheIdFilter = argsBuilderFilter((function(config) {
     }, $__1, this);
   }));
 }));
-var makeCacheFilter = abstractComponent('cacheProtocol', cacheStoreProtocol, streamFilter((function(config, handler) {
+var cacheFilter = streamFilter((function(config, handler) {
   var cacheProtocol = $traceurRuntime.assertObject(config).cacheProtocol;
   var $__0 = $traceurRuntime.assertObject(cacheProtocol),
       getCacheId = $__0.getCacheId,
@@ -118,8 +122,8 @@ var makeCacheFilter = abstractComponent('cacheProtocol', cacheStoreProtocol, str
         }
     }, $__1, this);
   }));
-})).addMiddleware(cacheIdFilter));
-var makeCacheInvalidationFilter = abstractComponent('cacheProtocol', cacheStoreProtocol, argsBuilderFilter((function(config) {
+})).addMiddleware(cacheIdFilter);
+var cacheInvalidationFilter = argsBuilderFilter((function(config) {
   var cacheProtocol = $traceurRuntime.assertObject(config).cacheProtocol;
   var removeCacheEntry = $traceurRuntime.assertObject(cacheProtocol).removeCacheEntry;
   return async($traceurRuntime.initGeneratorFunction(function $__1(args) {
@@ -151,13 +155,6 @@ var makeCacheInvalidationFilter = abstractComponent('cacheProtocol', cacheStoreP
         }
     }, $__1, this);
   }));
-})).addMiddleware(cacheIdFilter));
-var makeCacheFilters = (function(impl) {
-  var privateTable = arguments[1] !== (void 0) ? arguments[1] : {};
-  var cacheFilter = makeCacheFilter(impl, privateTable);
-  var cacheInvalidationFilter = makeCacheInvalidationFilter(impl, privateTable);
-  return {
-    cacheFilter: cacheFilter,
-    cacheInvalidationFilter: cacheInvalidationFilter
-  };
-});
+})).addMiddleware(cacheIdFilter);
+var abstractCacheFilter = abstractComponent('cacheProtocol', cacheStoreProtocol, cacheFilter);
+var abstractCacheInvalidationFilter = abstractComponent('cacheProtocol', cacheStoreProtocol, cacheInvalidationFilter);

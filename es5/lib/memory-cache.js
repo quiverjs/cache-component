@@ -3,15 +3,6 @@ Object.defineProperties(exports, {
   memoryCacheStoreBundle: {get: function() {
       return memoryCacheStoreBundle;
     }},
-  getCacheEntry: {get: function() {
-      return getCacheEntry;
-    }},
-  setCacheEntry: {get: function() {
-      return setCacheEntry;
-    }},
-  removeCacheEntry: {get: function() {
-      return removeCacheEntry;
-    }},
   makeMemoryCacheFilters: {get: function() {
       return makeMemoryCacheFilters;
     }},
@@ -29,9 +20,10 @@ var $__0 = $traceurRuntime.assertObject(require('quiver-stream-util')),
 var $__0 = $traceurRuntime.assertObject(require('quiver-component')),
     handleableBuilder = $__0.handleableBuilder,
     streamHandlerBuilder = $__0.streamHandlerBuilder,
-    partialImplement = $__0.partialImplement,
     handlerBundle = $__0.handlerBundle;
-var makeCacheFilters = $traceurRuntime.assertObject(require('./cache-filter.js')).makeCacheFilters;
+var $__0 = $traceurRuntime.assertObject(require('./cache-filter.js')),
+    abstractCacheFilter = $__0.abstractCacheFilter,
+    abstractCacheInvalidationFilter = $__0.abstractCacheInvalidationFilter;
 var inMemoryStreamable = async($traceurRuntime.initGeneratorFunction(function $__1(streamable) {
   var $__2,
       $__3,
@@ -139,13 +131,13 @@ var memoryCacheStoreBundle = handlerBundle((function(config) {
     removeCacheEntry: removeCacheEntry
   };
 })).simpleHandler('getCacheEntry', 'void', 'streamable').simpleHandler('setCacheEntry', 'streamable', 'void').simpleHandler('removeCacheEntry', 'void', 'void');
-var $__0 = $traceurRuntime.assertObject(memoryCacheStoreBundle.handlerComponents),
-    getCacheEntry = $__0.getCacheEntry,
-    setCacheEntry = $__0.setCacheEntry,
-    removeCacheEntry = $__0.removeCacheEntry;
-;
-var makeMemoryCacheFilters = partialImplement(makeCacheFilters, {
-  getCacheEntry: getCacheEntry,
-  setCacheEntry: setCacheEntry,
-  removeCacheEntry: removeCacheEntry
+var cacheComponents = memoryCacheStoreBundle.handlerComponents;
+var abstractMemoryCacheFilter = abstractCacheFilter.implement(cacheComponents);
+var abstractMemoryCacheInvalidationFilter = abstractCacheInvalidationFilter.implement(cacheComponents);
+var makeMemoryCacheFilters = (function(implMap) {
+  var privateTable = {};
+  return {
+    cacheFilter: abstractMemoryCacheFilter.implement(implMap, privateTable).concretize(),
+    cacheInvalidationFilter: abstractMemoryCacheInvalidationFilter.implement(implMap, privateTable).concretize()
+  };
 });

@@ -1,13 +1,7 @@
 "use strict";
 Object.defineProperties(exports, {
-  getCacheEntry: {get: function() {
-      return getCacheEntry;
-    }},
-  setCacheEntry: {get: function() {
-      return setCacheEntry;
-    }},
-  removeCacheEntry: {get: function() {
-      return removeCacheEntry;
+  diskCacheStoreBundle: {get: function() {
+      return diskCacheStoreBundle;
     }},
   makeDiskCacheFilters: {get: function() {
       return makeDiskCacheFilters;
@@ -28,10 +22,11 @@ var makeFileStatsHandler = $traceurRuntime.assertObject(require('quiver-file-com
 var $__0 = $traceurRuntime.assertObject(require('quiver-file-stream')),
     fileStreamable = $__0.fileStreamable,
     fileWriteStream = $__0.fileWriteStream;
-var makeCacheFilters = $traceurRuntime.assertObject(require('./cache-filter.js')).makeCacheFilters;
+var $__0 = $traceurRuntime.assertObject(require('./cache-filter.js')),
+    abstractCacheFilter = $__0.abstractCacheFilter,
+    abstractCacheInvalidationFilter = $__0.abstractCacheInvalidationFilter;
 var $__0 = $traceurRuntime.assertObject(require('quiver-component')),
     handlerBundle = $__0.handlerBundle,
-    partialImplement = $__0.partialImplement,
     argsBuilderFilter = $__0.argsBuilderFilter,
     configAliasMiddleware = $__0.configAliasMiddleware,
     inputHandlerMiddleware = $__0.inputHandlerMiddleware;
@@ -175,13 +170,13 @@ var diskCacheStoreBundle = handlerBundle((function(config) {
     removeCacheEntry: removeCacheEntry
   };
 })).simpleHandler('getCacheEntry', 'void', 'streamable').simpleHandler('setCacheEntry', 'streamable', 'void').simpleHandler('removeCacheEntry', 'void', 'void').addMiddleware(cachePathFilter).addMiddleware(inputHandlerMiddleware(fileStatsHandler, 'getFileStats'));
-var $__0 = $traceurRuntime.assertObject(diskCacheStoreBundle.handlerComponents),
-    getCacheEntry = $__0.getCacheEntry,
-    setCacheEntry = $__0.setCacheEntry,
-    removeCacheEntry = $__0.removeCacheEntry;
-;
-var makeDiskCacheFilters = partialImplement(makeCacheFilters, {
-  getCacheEntry: getCacheEntry,
-  setCacheEntry: setCacheEntry,
-  removeCacheEntry: removeCacheEntry
+var cacheComponents = diskCacheStoreBundle.handlerComponents;
+var abstractDiskCacheFilter = abstractCacheFilter.implement(cacheComponents);
+var abstractDiskCacheInvalidationFilter = abstractCacheInvalidationFilter.implement(cacheComponents);
+var makeDiskCacheFilters = (function(implMap) {
+  var privateTable = {};
+  return {
+    cacheFilter: abstractDiskCacheFilter.implement(implMap, privateTable).concretize(),
+    cacheInvalidationFilter: abstractDiskCacheInvalidationFilter.implement(implMap, privateTable).concretize()
+  };
 });
