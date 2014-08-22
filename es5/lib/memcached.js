@@ -1,5 +1,8 @@
 "use strict";
 Object.defineProperties(exports, {
+  createMemcached: {get: function() {
+      return createMemcached;
+    }},
   memcachedStoreBundle: {get: function() {
       return memcachedStoreBundle;
     }},
@@ -9,15 +12,19 @@ Object.defineProperties(exports, {
   abstractMemcachedCacheInvalidationFilter: {get: function() {
       return abstractMemcachedCacheInvalidationFilter;
     }},
-  makeMemcachedCacheFilters: {get: function() {
-      return makeMemcachedCacheFilters;
+  makeMemcachedFilters: {get: function() {
+      return makeMemcachedFilters;
     }},
   __esModule: {value: true}
 });
+var error = $traceurRuntime.assertObject(require('quiver-error')).error;
 var $__1 = $traceurRuntime.assertObject(require('quiver-promise')),
     promisify = $__1.promisify,
-    async = $__1.async;
-var streamableToBuffer = $traceurRuntime.assertObject(require('quiver-stream-util')).streamableToBuffer;
+    async = $__1.async,
+    reject = $__1.reject;
+var $__1 = $traceurRuntime.assertObject(require('quiver-stream-util')),
+    streamableToBuffer = $__1.streamableToBuffer,
+    bufferToStreamable = $__1.bufferToStreamable;
 var handlerBundle = $traceurRuntime.assertObject(require('quiver-component')).handlerBundle;
 var $__1 = $traceurRuntime.assertObject(require('./cache-filter.js')),
     abstractCacheFilter = $__1.abstractCacheFilter,
@@ -25,11 +32,11 @@ var $__1 = $traceurRuntime.assertObject(require('./cache-filter.js')),
 var Memcached = require('memcached');
 var promisifyMethod = (function(object, method) {
   return promisify((function() {
-    var $__2;
+    var $__3;
     for (var args = [],
         $__0 = 0; $__0 < arguments.length; $__0++)
       args[$__0] = arguments[$__0];
-    return ($__2 = object)[method].apply($__2, $traceurRuntime.toObject(args));
+    return ($__3 = object)[method].apply($__3, $traceurRuntime.toObject(args));
   }));
 });
 var promisifyMethods = (function(object, methods) {
@@ -39,23 +46,23 @@ var promisifyMethods = (function(object, methods) {
   }), {});
 });
 var createMemcached = (function(servers, options) {
-  var memcached = new Memcached(memcachedServers, memcachedOptions);
-  return promisifyMethods(memcached, ['get', 'set', 'replace']);
+  var memcached = new Memcached(servers, options);
+  return promisifyMethods(memcached, ['get', 'set', 'replace', 'del']);
 });
 var memcachedStoreBundle = handlerBundle((function(config) {
+  var $__2;
   var $__1 = $traceurRuntime.assertObject(config),
       memcachedServers = $__1.memcachedServers,
-      memcachedOptions = $__1.memcachedOptions;
+      memcachedOptions = $__1.memcachedOptions,
+      cacheExpiry = ($__2 = $__1.cacheExpiry) === void 0 ? 300 : $__2;
   var memcached = createMemcached(memcachedServers, memcachedOptions);
   var getCacheEntry = (function(args) {
     var cacheId = $traceurRuntime.assertObject(args).cacheId;
     return memcached.get(cacheId).then((function(data) {
-      return data[cacheId];
-    }), (function(err) {
-      return reject(error(404, 'not found'));
+      return data ? bufferToStreamable(data) : reject(error(404, 'not found'));
     }));
   });
-  var setCacheEntry = async($traceurRuntime.initGeneratorFunction(function $__3(args, streamable) {
+  var setCacheEntry = async($traceurRuntime.initGeneratorFunction(function $__4(args, streamable) {
     var cacheId,
         buffer;
     return $traceurRuntime.createGeneratorInstance(function($ctx) {
@@ -74,7 +81,7 @@ var memcachedStoreBundle = handlerBundle((function(config) {
             break;
           case 4:
             $ctx.state = 6;
-            return memcached.set(cacheId, buffer);
+            return memcached.set(cacheId, buffer, cacheExpiry);
           case 6:
             $ctx.maybeThrow();
             $ctx.state = -2;
@@ -82,7 +89,7 @@ var memcachedStoreBundle = handlerBundle((function(config) {
           default:
             return $ctx.end();
         }
-    }, $__3, this);
+    }, $__4, this);
   }));
   var removeCacheEntry = (function(args) {
     var cacheId = $traceurRuntime.assertObject(args).cacheId;
@@ -97,7 +104,7 @@ var memcachedStoreBundle = handlerBundle((function(config) {
 var cacheComponents = memcachedStoreBundle.handlerComponents;
 var abstractMemcachedCacheFilter = abstractCacheFilter.implement(cacheComponents);
 var abstractMemcachedCacheInvalidationFilter = abstractCacheInvalidationFilter.implement(cacheComponents);
-var makeMemcachedCacheFilters = (function(implMap) {
+var makeMemcachedFilters = (function(implMap) {
   var privateTable = {};
   return {
     cacheFilter: abstractMemcachedCacheFilter.implement(implMap, privateTable).concretize(),

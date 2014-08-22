@@ -62,9 +62,9 @@ var cacheFilter = streamFilter((function(config, handler) {
         switch ($ctx.state) {
           case 0:
             cacheId = args[_cacheId];
-            $ctx.state = 27;
+            $ctx.state = 40;
             break;
-          case 27:
+          case 40:
             $ctx.pushTry(7, null);
             $ctx.state = 10;
             break;
@@ -108,12 +108,30 @@ var cacheFilter = streamFilter((function(config, handler) {
             $ctx.state = 23;
             break;
           case 23:
-            try {
-              setCacheEntry({cacheId: cacheId}, resultStreamable);
-            } catch (err) {}
-            $ctx.state = 29;
+            $ctx.pushTry(28, null);
+            $ctx.state = 31;
             break;
-          case 29:
+          case 31:
+            $ctx.state = 25;
+            return setCacheEntry({cacheId: cacheId}, resultStreamable);
+          case 25:
+            $ctx.maybeThrow();
+            $ctx.state = 27;
+            break;
+          case 27:
+            $ctx.popTry();
+            $ctx.state = 33;
+            break;
+          case 28:
+            $ctx.popTry();
+            err = $ctx.storedException;
+            $ctx.state = 34;
+            break;
+          case 34:
+            console.log('set cache error:', err);
+            $ctx.state = 33;
+            break;
+          case 33:
             $ctx.returnValue = resultStreamable;
             $ctx.state = -2;
             break;
