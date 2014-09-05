@@ -8,33 +8,43 @@ Object.defineProperties(exports, {
     }},
   __esModule: {value: true}
 });
-var joinPath = $traceurRuntime.assertObject(require('path')).join;
-var $__0 = $traceurRuntime.assertObject(require('fs')),
-    rename = $__0.rename,
-    symlink = $__0.symlink,
-    unlink = $__0.unlink;
-var pipeStream = $traceurRuntime.assertObject(require('quiver-stream-util')).pipeStream;
-var $__0 = $traceurRuntime.assertObject(require('quiver-promise')),
-    async = $__0.async,
-    promisify = $__0.promisify,
-    reject = $__0.reject;
-var makeFileStatsHandler = $traceurRuntime.assertObject(require('quiver-file-component')).makeFileStatsHandler;
-var $__0 = $traceurRuntime.assertObject(require('quiver-file-stream')),
-    fileStreamable = $__0.fileStreamable,
-    fileWriteStream = $__0.fileWriteStream;
-var $__0 = $traceurRuntime.assertObject(require('./cache-filter.js')),
-    abstractCacheFilter = $__0.abstractCacheFilter,
-    abstractCacheInvalidationFilter = $__0.abstractCacheInvalidationFilter;
-var $__0 = $traceurRuntime.assertObject(require('quiver-component')),
-    handlerBundle = $__0.handlerBundle,
-    argsBuilderFilter = $__0.argsBuilderFilter,
-    configAliasMiddleware = $__0.configAliasMiddleware,
-    inputHandlerMiddleware = $__0.inputHandlerMiddleware;
+var $__quiver_45_stream_45_util__,
+    $__quiver_45_promise__,
+    $__quiver_45_file_45_component__,
+    $__quiver_45_file_45_stream__,
+    $__path__,
+    $__fs__,
+    $__cache_45_filter_46_js__,
+    $__quiver_45_component__;
+var pipeStream = ($__quiver_45_stream_45_util__ = require("quiver-stream-util"), $__quiver_45_stream_45_util__ && $__quiver_45_stream_45_util__.__esModule && $__quiver_45_stream_45_util__ || {default: $__quiver_45_stream_45_util__}).pipeStream;
+var $__1 = ($__quiver_45_promise__ = require("quiver-promise"), $__quiver_45_promise__ && $__quiver_45_promise__.__esModule && $__quiver_45_promise__ || {default: $__quiver_45_promise__}),
+    async = $__1.async,
+    promisify = $__1.promisify,
+    reject = $__1.reject;
+var makeFileStatsHandler = ($__quiver_45_file_45_component__ = require("quiver-file-component"), $__quiver_45_file_45_component__ && $__quiver_45_file_45_component__.__esModule && $__quiver_45_file_45_component__ || {default: $__quiver_45_file_45_component__}).makeFileStatsHandler;
+var $__3 = ($__quiver_45_file_45_stream__ = require("quiver-file-stream"), $__quiver_45_file_45_stream__ && $__quiver_45_file_45_stream__.__esModule && $__quiver_45_file_45_stream__ || {default: $__quiver_45_file_45_stream__}),
+    fileStreamable = $__3.fileStreamable,
+    fileWriteStream = $__3.fileWriteStream;
+var pathLib = ($__path__ = require("path"), $__path__ && $__path__.__esModule && $__path__ || {default: $__path__}).default;
+var joinPath = pathLib.join;
+var fs = ($__fs__ = require("fs"), $__fs__ && $__fs__.__esModule && $__fs__ || {default: $__fs__}).default;
+var $__8 = fs,
+    rename = $__8.rename,
+    symlink = $__8.symlink,
+    unlink = $__8.unlink;
+var $__6 = ($__cache_45_filter_46_js__ = require("./cache-filter.js"), $__cache_45_filter_46_js__ && $__cache_45_filter_46_js__.__esModule && $__cache_45_filter_46_js__ || {default: $__cache_45_filter_46_js__}),
+    abstractCacheFilter = $__6.abstractCacheFilter,
+    abstractCacheInvalidationFilter = $__6.abstractCacheInvalidationFilter;
+var $__7 = ($__quiver_45_component__ = require("quiver-component"), $__quiver_45_component__ && $__quiver_45_component__.__esModule && $__quiver_45_component__ || {default: $__quiver_45_component__}),
+    handlerBundle = $__7.handlerBundle,
+    argsBuilderFilter = $__7.argsBuilderFilter,
+    configAliasMiddleware = $__7.configAliasMiddleware,
+    inputHandlerMiddleware = $__7.inputHandlerMiddleware;
 var moveFile = promisify(rename);
 var linkFile = promisify(symlink);
 var removeFile = promisify(unlink);
 var cachePathFilter = argsBuilderFilter((function(config) {
-  var cacheDir = $traceurRuntime.assertObject(config).cacheDir;
+  var cacheDir = config.cacheDir;
   return (function(args) {
     var cacheId = args.cacheId;
     args.cachePath = joinPath(cacheDir, cacheId);
@@ -43,11 +53,11 @@ var cachePathFilter = argsBuilderFilter((function(config) {
 }));
 var fileStatsHandler = makeFileStatsHandler().addMiddleware(configAliasMiddleware({dirPath: 'cacheDir'}));
 var diskCacheStoreBundle = handlerBundle((function(config) {
-  var $__0 = $traceurRuntime.assertObject(config),
-      cacheDir = $__0.cacheDir,
-      getFileStats = $__0.getFileStats;
-  var getCacheEntry = async($traceurRuntime.initGeneratorFunction(function $__1(args) {
-    var $__0,
+  var $__8 = config,
+      cacheDir = $__8.cacheDir,
+      getFileStats = $__8.getFileStats;
+  var getCacheEntry = async($traceurRuntime.initGeneratorFunction(function $__9(args) {
+    var $__8,
         cacheId,
         cachePath,
         fileStats,
@@ -56,7 +66,7 @@ var diskCacheStoreBundle = handlerBundle((function(config) {
       while (true)
         switch ($ctx.state) {
           case 0:
-            $__0 = $traceurRuntime.assertObject(args), cacheId = $__0.cacheId, cachePath = $__0.cachePath;
+            $__8 = args, cacheId = $__8.cacheId, cachePath = $__8.cachePath;
             $ctx.state = 12;
             break;
           case 12:
@@ -84,9 +94,9 @@ var diskCacheStoreBundle = handlerBundle((function(config) {
           default:
             return $ctx.end();
         }
-    }, $__1, this);
+    }, $__9, this);
   }));
-  var setCacheEntry = async($traceurRuntime.initGeneratorFunction(function $__2(args, streamable) {
+  var setCacheEntry = async($traceurRuntime.initGeneratorFunction(function $__10(args, streamable) {
     var cachePath,
         filePath,
         readStream,
@@ -95,7 +105,7 @@ var diskCacheStoreBundle = handlerBundle((function(config) {
       while (true)
         switch ($ctx.state) {
           case 0:
-            cachePath = $traceurRuntime.assertObject(args).cachePath;
+            cachePath = args.cachePath;
             $ctx.state = 33;
             break;
           case 33:
@@ -158,10 +168,10 @@ var diskCacheStoreBundle = handlerBundle((function(config) {
           default:
             return $ctx.end();
         }
-    }, $__2, this);
+    }, $__10, this);
   }));
   var removeCacheEntry = (function(args) {
-    var cachePath = $traceurRuntime.assertObject(args).cachePath;
+    var cachePath = args.cachePath;
     return removeFile(cachePath);
   });
   return {

@@ -1,16 +1,22 @@
 "use strict";
-require('traceur');
-var joinPath = $traceurRuntime.assertObject(require('path')).join;
-var $__0 = $traceurRuntime.assertObject(require('quiver-promise')),
+var $__traceur_64_0_46_0_46_58__,
+    $__quiver_45_promise__,
+    $__quiver_45_component__,
+    $__path__,
+    $___46__46__47_lib_47_disk_45_cache_46_js__;
+($__traceur_64_0_46_0_46_58__ = require("traceur"), $__traceur_64_0_46_0_46_58__ && $__traceur_64_0_46_0_46_58__.__esModule && $__traceur_64_0_46_0_46_58__ || {default: $__traceur_64_0_46_0_46_58__});
+var $__0 = ($__quiver_45_promise__ = require("quiver-promise"), $__quiver_45_promise__ && $__quiver_45_promise__.__esModule && $__quiver_45_promise__ || {default: $__quiver_45_promise__}),
     async = $__0.async,
     promisify = $__0.promisify,
     timeout = $__0.timeout;
-var $__0 = $traceurRuntime.assertObject(require('quiver-component')),
-    simpleHandler = $__0.simpleHandler,
-    simpleHandlerBuilder = $__0.simpleHandlerBuilder,
-    handlerBundle = $__0.handlerBundle,
-    transformFilter = $__0.transformFilter;
-var makeDiskCacheFilters = $traceurRuntime.assertObject(require('../lib/disk-cache.js')).makeDiskCacheFilters;
+var $__1 = ($__quiver_45_component__ = require("quiver-component"), $__quiver_45_component__ && $__quiver_45_component__.__esModule && $__quiver_45_component__ || {default: $__quiver_45_component__}),
+    simpleHandler = $__1.simpleHandler,
+    simpleHandlerBuilder = $__1.simpleHandlerBuilder,
+    handlerBundle = $__1.handlerBundle,
+    transformFilter = $__1.transformFilter;
+var pathLib = ($__path__ = require("path"), $__path__ && $__path__.__esModule && $__path__ || {default: $__path__}).default;
+var joinPath = pathLib.join;
+var makeDiskCacheFilters = ($___46__46__47_lib_47_disk_45_cache_46_js__ = require("../lib/disk-cache.js"), $___46__46__47_lib_47_disk_45_cache_46_js__ && $___46__46__47_lib_47_disk_45_cache_46_js__.__esModule && $___46__46__47_lib_47_disk_45_cache_46_js__ || {default: $___46__46__47_lib_47_disk_45_cache_46_js__}).makeDiskCacheFilters;
 var chai = require('chai');
 var chaiAsPromised = require('chai-as-promised');
 chai.use(chaiAsPromised);
@@ -26,10 +32,10 @@ describe('disk cache filter test', (function() {
     return text.toUpperCase();
   }), 'text', 'text');
   var greet = simpleHandler((function(args) {
-    var id = $traceurRuntime.assertObject(args).id;
+    var id = args.id;
     return 'Hello, ' + id;
   }), 'void', 'text').addMiddleware(transformFilter(uppercase, 'out'));
-  it('sanity test', async($traceurRuntime.initGeneratorFunction(function $__1() {
+  it('sanity test', async($traceurRuntime.initGeneratorFunction(function $__5() {
     var handler;
     return $traceurRuntime.createGeneratorInstance(function($ctx) {
       while (true)
@@ -51,10 +57,10 @@ describe('disk cache filter test', (function() {
           default:
             return $ctx.end();
         }
-    }, $__1, this);
+    }, $__5, this);
   })));
-  it('basic test', async($traceurRuntime.initGeneratorFunction(function $__2() {
-    var $__0,
+  it('basic test', async($traceurRuntime.initGeneratorFunction(function $__6() {
+    var $__4,
         cacheFilter,
         cacheInvalidationFilter,
         cachedGreet,
@@ -65,7 +71,7 @@ describe('disk cache filter test', (function() {
       while (true)
         switch ($ctx.state) {
           case 0:
-            $__0 = $traceurRuntime.assertObject(makeDiskCacheFilters({getCacheId: getCacheId})), cacheFilter = $__0.cacheFilter, cacheInvalidationFilter = $__0.cacheInvalidationFilter;
+            $__4 = makeDiskCacheFilters({getCacheId: getCacheId}), cacheFilter = $__4.cacheFilter, cacheInvalidationFilter = $__4.cacheInvalidationFilter;
             cachedGreet = greet.makePrivate().addMiddleware(cacheFilter);
             config = {cacheDir: cacheDir};
             $ctx.state = 14;
@@ -103,6 +109,6 @@ describe('disk cache filter test', (function() {
           default:
             return $ctx.end();
         }
-    }, $__2, this);
+    }, $__6, this);
   })));
 }));

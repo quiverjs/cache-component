@@ -17,26 +17,32 @@ Object.defineProperties(exports, {
     }},
   __esModule: {value: true}
 });
-var error = $traceurRuntime.assertObject(require('quiver-error')).error;
-var $__1 = $traceurRuntime.assertObject(require('quiver-promise')),
+var $__quiver_45_error__,
+    $__quiver_45_promise__,
+    $__quiver_45_stream_45_util__,
+    $__quiver_45_component__,
+    $__cache_45_filter_46_js__,
+    $__memcached__;
+var error = ($__quiver_45_error__ = require("quiver-error"), $__quiver_45_error__ && $__quiver_45_error__.__esModule && $__quiver_45_error__ || {default: $__quiver_45_error__}).error;
+var $__1 = ($__quiver_45_promise__ = require("quiver-promise"), $__quiver_45_promise__ && $__quiver_45_promise__.__esModule && $__quiver_45_promise__ || {default: $__quiver_45_promise__}),
     promisify = $__1.promisify,
     async = $__1.async,
     reject = $__1.reject;
-var $__1 = $traceurRuntime.assertObject(require('quiver-stream-util')),
-    streamableToBuffer = $__1.streamableToBuffer,
-    bufferToStreamable = $__1.bufferToStreamable;
-var handlerBundle = $traceurRuntime.assertObject(require('quiver-component')).handlerBundle;
-var $__1 = $traceurRuntime.assertObject(require('./cache-filter.js')),
-    abstractCacheFilter = $__1.abstractCacheFilter,
-    abstractCacheInvalidationFilter = $__1.abstractCacheInvalidationFilter;
-var Memcached = require('memcached');
+var $__2 = ($__quiver_45_stream_45_util__ = require("quiver-stream-util"), $__quiver_45_stream_45_util__ && $__quiver_45_stream_45_util__.__esModule && $__quiver_45_stream_45_util__ || {default: $__quiver_45_stream_45_util__}),
+    streamableToBuffer = $__2.streamableToBuffer,
+    bufferToStreamable = $__2.bufferToStreamable;
+var handlerBundle = ($__quiver_45_component__ = require("quiver-component"), $__quiver_45_component__ && $__quiver_45_component__.__esModule && $__quiver_45_component__ || {default: $__quiver_45_component__}).handlerBundle;
+var $__4 = ($__cache_45_filter_46_js__ = require("./cache-filter.js"), $__cache_45_filter_46_js__ && $__cache_45_filter_46_js__.__esModule && $__cache_45_filter_46_js__ || {default: $__cache_45_filter_46_js__}),
+    abstractCacheFilter = $__4.abstractCacheFilter,
+    abstractCacheInvalidationFilter = $__4.abstractCacheInvalidationFilter;
+var Memcached = ($__memcached__ = require("memcached"), $__memcached__ && $__memcached__.__esModule && $__memcached__ || {default: $__memcached__}).default;
 var promisifyMethod = (function(object, method) {
   return promisify((function() {
-    var $__3;
+    var $__9;
     for (var args = [],
-        $__0 = 0; $__0 < arguments.length; $__0++)
-      args[$__0] = arguments[$__0];
-    return ($__3 = object)[method].apply($__3, $traceurRuntime.toObject(args));
+        $__6 = 0; $__6 < arguments.length; $__6++)
+      args[$__6] = arguments[$__6];
+    return ($__9 = object)[method].apply($__9, $traceurRuntime.spread(args));
   }));
 });
 var promisifyMethods = (function(object, methods) {
@@ -50,26 +56,26 @@ var createMemcached = (function(servers, options) {
   return promisifyMethods(memcached, ['get', 'set', 'replace', 'del']);
 });
 var memcachedStoreBundle = handlerBundle((function(config) {
-  var $__2;
-  var $__1 = $traceurRuntime.assertObject(config),
-      memcachedServers = $__1.memcachedServers,
-      memcachedOptions = $__1.memcachedOptions,
-      cacheExpiry = ($__2 = $__1.cacheExpiry) === void 0 ? 300 : $__2;
+  var $__8;
+  var $__7 = config,
+      memcachedServers = $__7.memcachedServers,
+      memcachedOptions = $__7.memcachedOptions,
+      cacheExpiry = ($__8 = $__7.cacheExpiry) === void 0 ? 300 : $__8;
   var memcached = createMemcached(memcachedServers, memcachedOptions);
   var getCacheEntry = (function(args) {
-    var cacheId = $traceurRuntime.assertObject(args).cacheId;
+    var cacheId = args.cacheId;
     return memcached.get(cacheId).then((function(data) {
       return data ? bufferToStreamable(data) : reject(error(404, 'not found'));
     }));
   });
-  var setCacheEntry = async($traceurRuntime.initGeneratorFunction(function $__4(args, streamable) {
+  var setCacheEntry = async($traceurRuntime.initGeneratorFunction(function $__10(args, streamable) {
     var cacheId,
         buffer;
     return $traceurRuntime.createGeneratorInstance(function($ctx) {
       while (true)
         switch ($ctx.state) {
           case 0:
-            cacheId = $traceurRuntime.assertObject(args).cacheId;
+            cacheId = args.cacheId;
             $ctx.state = 10;
             break;
           case 10:
@@ -89,10 +95,10 @@ var memcachedStoreBundle = handlerBundle((function(config) {
           default:
             return $ctx.end();
         }
-    }, $__4, this);
+    }, $__10, this);
   }));
   var removeCacheEntry = (function(args) {
-    var cacheId = $traceurRuntime.assertObject(args).cacheId;
+    var cacheId = args.cacheId;
     return memcached.del(cacheId);
   });
   return {

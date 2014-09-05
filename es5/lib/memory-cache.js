@@ -8,28 +8,32 @@ Object.defineProperties(exports, {
     }},
   __esModule: {value: true}
 });
-var error = $traceurRuntime.assertObject(require('quiver-error')).error;
-var $__0 = $traceurRuntime.assertObject(require('quiver-promise')),
-    reject = $__0.reject,
-    resolve = $__0.resolve,
-    async = $__0.async;
-var simpleToStreamHandler = $traceurRuntime.assertObject(require('quiver-simple-handler')).simpleToStreamHandler;
-var $__0 = $traceurRuntime.assertObject(require('quiver-stream-util')),
-    reuseStream = $__0.reuseStream,
-    reuseStreamable = $__0.reuseStreamable;
-var $__0 = $traceurRuntime.assertObject(require('quiver-component')),
-    handleableBuilder = $__0.handleableBuilder,
-    streamHandlerBuilder = $__0.streamHandlerBuilder,
-    handlerBundle = $__0.handlerBundle;
-var $__0 = $traceurRuntime.assertObject(require('./cache-filter.js')),
-    abstractCacheFilter = $__0.abstractCacheFilter,
-    abstractCacheInvalidationFilter = $__0.abstractCacheInvalidationFilter;
-var inMemoryStreamable = async($traceurRuntime.initGeneratorFunction(function $__1(streamable) {
-  var $__2,
-      $__3,
-      $__4,
-      $__5,
-      $__6;
+var $__quiver_45_error__,
+    $__quiver_45_promise__,
+    $__quiver_45_stream_45_util__,
+    $__quiver_45_component__,
+    $__cache_45_filter_46_js__;
+var error = ($__quiver_45_error__ = require("quiver-error"), $__quiver_45_error__ && $__quiver_45_error__.__esModule && $__quiver_45_error__ || {default: $__quiver_45_error__}).error;
+var $__1 = ($__quiver_45_promise__ = require("quiver-promise"), $__quiver_45_promise__ && $__quiver_45_promise__.__esModule && $__quiver_45_promise__ || {default: $__quiver_45_promise__}),
+    reject = $__1.reject,
+    resolve = $__1.resolve,
+    async = $__1.async;
+var $__2 = ($__quiver_45_stream_45_util__ = require("quiver-stream-util"), $__quiver_45_stream_45_util__ && $__quiver_45_stream_45_util__.__esModule && $__quiver_45_stream_45_util__ || {default: $__quiver_45_stream_45_util__}),
+    reuseStream = $__2.reuseStream,
+    reuseStreamable = $__2.reuseStreamable;
+var $__3 = ($__quiver_45_component__ = require("quiver-component"), $__quiver_45_component__ && $__quiver_45_component__.__esModule && $__quiver_45_component__ || {default: $__quiver_45_component__}),
+    handleableBuilder = $__3.handleableBuilder,
+    streamHandlerBuilder = $__3.streamHandlerBuilder,
+    handlerBundle = $__3.handlerBundle;
+var $__4 = ($__cache_45_filter_46_js__ = require("./cache-filter.js"), $__cache_45_filter_46_js__ && $__cache_45_filter_46_js__.__esModule && $__cache_45_filter_46_js__ || {default: $__cache_45_filter_46_js__}),
+    abstractCacheFilter = $__4.abstractCacheFilter,
+    abstractCacheInvalidationFilter = $__4.abstractCacheInvalidationFilter;
+var inMemoryStreamable = async($traceurRuntime.initGeneratorFunction(function $__6(streamable) {
+  var $__7,
+      $__8,
+      $__9,
+      $__10,
+      $__11;
   return $traceurRuntime.createGeneratorInstance(function($ctx) {
     while (true)
       switch ($ctx.state) {
@@ -48,25 +52,25 @@ var inMemoryStreamable = async($traceurRuntime.initGeneratorFunction(function $_
           $ctx.state = -2;
           break;
         case 6:
-          $__2 = streamable.toStream;
-          $__3 = $__2.call(streamable);
+          $__7 = streamable.toStream;
+          $__8 = $__7.call(streamable);
           $ctx.state = 13;
           break;
         case 13:
           $ctx.state = 9;
-          return $__3;
+          return $__8;
         case 9:
-          $__4 = $ctx.sent;
+          $__9 = $ctx.sent;
           $ctx.state = 11;
           break;
         case 11:
-          $__5 = reuseStream($__4);
-          $__6 = $__5.toStream;
+          $__10 = reuseStream($__9);
+          $__11 = $__10.toStream;
           $ctx.state = 15;
           break;
         case 15:
           $ctx.state = 17;
-          return $__6;
+          return $__11;
         case 17:
           streamable.toStream = $ctx.sent;
           $ctx.state = 19;
@@ -82,12 +86,12 @@ var inMemoryStreamable = async($traceurRuntime.initGeneratorFunction(function $_
         default:
           return $ctx.end();
       }
-  }, $__1, this);
+  }, $__6, this);
 }));
 var memoryCacheStoreBundle = handlerBundle((function(config) {
   var cacheStore = {};
   var getCacheEntry = (function(args) {
-    var cacheId = $traceurRuntime.assertObject(args).cacheId;
+    var cacheId = args.cacheId;
     if (cacheStore[cacheId]) {
       var streamable = cacheStore[cacheId];
       if (!streamable.isClosed)
@@ -96,13 +100,13 @@ var memoryCacheStoreBundle = handlerBundle((function(config) {
     }
     return reject(error(404, 'not found'));
   });
-  var setCacheEntry = async($traceurRuntime.initGeneratorFunction(function $__7(args, streamable) {
+  var setCacheEntry = async($traceurRuntime.initGeneratorFunction(function $__12(args, streamable) {
     var cacheId;
     return $traceurRuntime.createGeneratorInstance(function($ctx) {
       while (true)
         switch ($ctx.state) {
           case 0:
-            cacheId = $traceurRuntime.assertObject(args).cacheId;
+            cacheId = args.cacheId;
             $ctx.state = 6;
             break;
           case 6:
@@ -119,10 +123,10 @@ var memoryCacheStoreBundle = handlerBundle((function(config) {
           default:
             return $ctx.end();
         }
-    }, $__7, this);
+    }, $__12, this);
   }));
   var removeCacheEntry = (function(args) {
-    var cacheId = $traceurRuntime.assertObject(args).cacheId;
+    var cacheId = args.cacheId;
     cacheStore[cacheId] = null;
   });
   return {

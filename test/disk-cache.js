@@ -1,11 +1,14 @@
 import 'traceur'
 
-import { join as joinPath } from 'path'
 import { async, promisify, timeout } from 'quiver-promise'
+
 import { 
   simpleHandler, simpleHandlerBuilder,
   handlerBundle, transformFilter
 } from 'quiver-component'
+
+import pathLib from 'path'
+var { join: joinPath } = pathLib
 
 import { makeDiskCacheFilters } from '../lib/disk-cache.js'
 

@@ -11,21 +11,25 @@ Object.defineProperties(exports, {
     }},
   __esModule: {value: true}
 });
-var copy = $traceurRuntime.assertObject(require('quiver-object')).copy;
-var async = $traceurRuntime.assertObject(require('quiver-promise')).async;
-var reuseStreamable = $traceurRuntime.assertObject(require('quiver-stream-util')).reuseStreamable;
-var $__0 = $traceurRuntime.assertObject(require('quiver-component')),
-    abstractComponent = $__0.abstractComponent,
-    protocol = $__0.protocol,
-    streamFilter = $__0.streamFilter,
-    argsBuilderFilter = $__0.argsBuilderFilter;
+var $__quiver_45_object__,
+    $__quiver_45_promise__,
+    $__quiver_45_stream_45_util__,
+    $__quiver_45_component__;
+var copy = ($__quiver_45_object__ = require("quiver-object"), $__quiver_45_object__ && $__quiver_45_object__.__esModule && $__quiver_45_object__ || {default: $__quiver_45_object__}).copy;
+var async = ($__quiver_45_promise__ = require("quiver-promise"), $__quiver_45_promise__ && $__quiver_45_promise__.__esModule && $__quiver_45_promise__ || {default: $__quiver_45_promise__}).async;
+var reuseStreamable = ($__quiver_45_stream_45_util__ = require("quiver-stream-util"), $__quiver_45_stream_45_util__ && $__quiver_45_stream_45_util__.__esModule && $__quiver_45_stream_45_util__ || {default: $__quiver_45_stream_45_util__}).reuseStreamable;
+var $__3 = ($__quiver_45_component__ = require("quiver-component"), $__quiver_45_component__ && $__quiver_45_component__.__esModule && $__quiver_45_component__ || {default: $__quiver_45_component__}),
+    abstractComponent = $__3.abstractComponent,
+    protocol = $__3.protocol,
+    streamFilter = $__3.streamFilter,
+    argsBuilderFilter = $__3.argsBuilderFilter;
 var cacheIdProtocol = protocol('cache id protocol').simpleHandler('getCacheId', 'void', 'text');
 var cacheStoreProtocol = protocol('cacheProtocol').subprotocol(cacheIdProtocol).simpleHandler('getCacheEntry', 'void', 'streamable').simpleHandler('setCacheEntry', 'streamable', 'void').simpleHandler('removeCacheEntry', 'void', 'void');
 var _cacheId = Symbol('cacheId');
 var cacheIdFilter = argsBuilderFilter((function(config) {
-  var cacheProtocol = $traceurRuntime.assertObject(config).cacheProtocol;
-  var getCacheId = $traceurRuntime.assertObject(cacheProtocol).getCacheId;
-  return async($traceurRuntime.initGeneratorFunction(function $__1(args) {
+  var cacheProtocol = config.cacheProtocol;
+  var getCacheId = cacheProtocol.getCacheId;
+  return async($traceurRuntime.initGeneratorFunction(function $__5(args) {
     return $traceurRuntime.createGeneratorInstance(function($ctx) {
       while (true)
         switch ($ctx.state) {
@@ -43,16 +47,16 @@ var cacheIdFilter = argsBuilderFilter((function(config) {
           default:
             return $ctx.end();
         }
-    }, $__1, this);
+    }, $__5, this);
   }));
 }));
 var cacheFilter = streamFilter((function(config, handler) {
-  var cacheProtocol = $traceurRuntime.assertObject(config).cacheProtocol;
-  var $__0 = $traceurRuntime.assertObject(cacheProtocol),
-      getCacheId = $__0.getCacheId,
-      getCacheEntry = $__0.getCacheEntry,
-      setCacheEntry = $__0.setCacheEntry;
-  return async($traceurRuntime.initGeneratorFunction(function $__1(args, inputStreamable) {
+  var cacheProtocol = config.cacheProtocol;
+  var $__4 = cacheProtocol,
+      getCacheId = $__4.getCacheId,
+      getCacheEntry = $__4.getCacheEntry,
+      setCacheEntry = $__4.setCacheEntry;
+  return async($traceurRuntime.initGeneratorFunction(function $__5(args, inputStreamable) {
     var cacheId,
         cachedResult,
         resultStreamable,
@@ -138,13 +142,13 @@ var cacheFilter = streamFilter((function(config, handler) {
           default:
             return $ctx.end();
         }
-    }, $__1, this);
+    }, $__5, this);
   }));
 })).addMiddleware(cacheIdFilter);
 var cacheInvalidationFilter = argsBuilderFilter((function(config) {
-  var cacheProtocol = $traceurRuntime.assertObject(config).cacheProtocol;
-  var removeCacheEntry = $traceurRuntime.assertObject(cacheProtocol).removeCacheEntry;
-  return async($traceurRuntime.initGeneratorFunction(function $__1(args) {
+  var cacheProtocol = config.cacheProtocol;
+  var removeCacheEntry = cacheProtocol.removeCacheEntry;
+  return async($traceurRuntime.initGeneratorFunction(function $__5(args) {
     var cacheId;
     return $traceurRuntime.createGeneratorInstance(function($ctx) {
       while (true)
@@ -171,7 +175,7 @@ var cacheInvalidationFilter = argsBuilderFilter((function(config) {
           default:
             return $ctx.end();
         }
-    }, $__1, this);
+    }, $__5, this);
   }));
 })).addMiddleware(cacheIdFilter);
 var abstractCacheFilter = abstractComponent('cacheProtocol', cacheStoreProtocol, cacheFilter);

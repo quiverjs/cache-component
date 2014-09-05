@@ -1,11 +1,13 @@
 import 'traceur'
 
-import { spawn } from 'child_process'
 import { async, timeout } from 'quiver-promise'
 import { 
   simpleHandler, simpleHandlerBuilder,
   handlerBundle
 } from 'quiver-component'
+
+import childProcess from 'child_process'
+var { spawn } = childProcess
 
 import { 
   makeMemoryCacheFilters,
