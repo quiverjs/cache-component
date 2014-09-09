@@ -10,8 +10,8 @@ import childProcess from 'child_process'
 var { spawn } = childProcess
 
 import { 
-  makeMemoryCacheFilters,
-  makeMemcachedFilters
+  memoryCacheFilters,
+  memcachedFilters
 } from '../lib/cache-component.js'
 
 import { createMemcached } from '../lib/memcached.js'
@@ -88,7 +88,7 @@ describe('cache filter test', () => {
   it('memory cache test', async(function*() {
     var {
       cacheFilter, cacheInvalidationFilter 
-    } = makeMemoryCacheFilters({getCacheId})
+    } = memoryCacheFilters({getCacheId})
 
     var { increment, reset } = counterBundle.makePrivate()
       .handlerComponents
@@ -125,7 +125,7 @@ describe('cache filter test', () => {
       .should.eventually.equal('bar-1')
   }))
 
-  it.only('memcached test', async(function*() {
+  it('memcached test', async(function*() {
     var server = spawn('memcached', ['-p', memcachedPort], {
       stdio: 'ignore'
     })
@@ -139,7 +139,7 @@ describe('cache filter test', () => {
 
     var {
       cacheFilter, cacheInvalidationFilter 
-    } = makeMemcachedFilters({getCacheId})
+    } = memcachedFilters({getCacheId})
 
     var { increment, reset } = counterBundle.makePrivate()
       .handlerComponents

@@ -21,7 +21,7 @@ var $__1 = ($__quiver_45_promise__ = require("quiver-promise"), $__quiver_45_pro
     async = $__1.async,
     promisify = $__1.promisify,
     reject = $__1.reject;
-var makeFileStatsHandler = ($__quiver_45_file_45_component__ = require("quiver-file-component"), $__quiver_45_file_45_component__ && $__quiver_45_file_45_component__.__esModule && $__quiver_45_file_45_component__ || {default: $__quiver_45_file_45_component__}).makeFileStatsHandler;
+var fileStatsHandler = ($__quiver_45_file_45_component__ = require("quiver-file-component"), $__quiver_45_file_45_component__ && $__quiver_45_file_45_component__.__esModule && $__quiver_45_file_45_component__ || {default: $__quiver_45_file_45_component__}).fileStatsHandler;
 var $__3 = ($__quiver_45_file_45_stream__ = require("quiver-file-stream"), $__quiver_45_file_45_stream__ && $__quiver_45_file_45_stream__.__esModule && $__quiver_45_file_45_stream__ || {default: $__quiver_45_file_45_stream__}),
     fileStreamable = $__3.fileStreamable,
     fileWriteStream = $__3.fileWriteStream;
@@ -51,7 +51,6 @@ var cachePathFilter = argsBuilderFilter((function(config) {
     return args;
   });
 }));
-var fileStatsHandler = makeFileStatsHandler().addMiddleware(configAliasMiddleware({dirPath: 'cacheDir'}));
 var diskCacheStoreBundle = handlerBundle((function(config) {
   var $__8 = config,
       cacheDir = $__8.cacheDir,
@@ -179,7 +178,7 @@ var diskCacheStoreBundle = handlerBundle((function(config) {
     setCacheEntry: setCacheEntry,
     removeCacheEntry: removeCacheEntry
   };
-})).simpleHandler('getCacheEntry', 'void', 'streamable').simpleHandler('setCacheEntry', 'streamable', 'void').simpleHandler('removeCacheEntry', 'void', 'void').addMiddleware(cachePathFilter).addMiddleware(inputHandlerMiddleware(fileStatsHandler, 'getFileStats'));
+})).simpleHandler('getCacheEntry', 'void', 'streamable').simpleHandler('setCacheEntry', 'streamable', 'void').simpleHandler('removeCacheEntry', 'void', 'void').addMiddleware(cachePathFilter).addMiddleware(inputHandlerMiddleware(fileStatsHandler().addMiddleware(configAliasMiddleware({dirPath: 'cacheDir'})), 'getFileStats'));
 var cacheComponents = diskCacheStoreBundle.handlerComponents;
 var abstractDiskCacheFilter = abstractCacheFilter.implement(cacheComponents);
 var abstractDiskCacheInvalidationFilter = abstractCacheInvalidationFilter.implement(cacheComponents);

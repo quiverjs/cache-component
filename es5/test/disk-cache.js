@@ -3,7 +3,10 @@ var $__traceur_64_0_46_0_46_58__,
     $__quiver_45_promise__,
     $__quiver_45_component__,
     $__path__,
-    $___46__46__47_lib_47_disk_45_cache_46_js__;
+    $__fs__,
+    $__chai__,
+    $__chai_45_as_45_promised__,
+    $___46__46__47_lib_47_cache_45_component_46_js__;
 ($__traceur_64_0_46_0_46_58__ = require("traceur"), $__traceur_64_0_46_0_46_58__ && $__traceur_64_0_46_0_46_58__.__esModule && $__traceur_64_0_46_0_46_58__ || {default: $__traceur_64_0_46_0_46_58__});
 var $__0 = ($__quiver_45_promise__ = require("quiver-promise"), $__quiver_45_promise__ && $__quiver_45_promise__.__esModule && $__quiver_45_promise__ || {default: $__quiver_45_promise__}),
     async = $__0.async,
@@ -16,13 +19,16 @@ var $__1 = ($__quiver_45_component__ = require("quiver-component"), $__quiver_45
     transformFilter = $__1.transformFilter;
 var pathLib = ($__path__ = require("path"), $__path__ && $__path__.__esModule && $__path__ || {default: $__path__}).default;
 var joinPath = pathLib.join;
-var makeDiskCacheFilters = ($___46__46__47_lib_47_disk_45_cache_46_js__ = require("../lib/disk-cache.js"), $___46__46__47_lib_47_disk_45_cache_46_js__ && $___46__46__47_lib_47_disk_45_cache_46_js__.__esModule && $___46__46__47_lib_47_disk_45_cache_46_js__ || {default: $___46__46__47_lib_47_disk_45_cache_46_js__}).makeDiskCacheFilters;
-var chai = require('chai');
-var chaiAsPromised = require('chai-as-promised');
+var fs = ($__fs__ = require("fs"), $__fs__ && $__fs__.__esModule && $__fs__ || {default: $__fs__}).default;
+var $__7 = fs,
+    existsSync = $__7.existsSync,
+    readFileSync = $__7.readFileSync;
+var chai = ($__chai__ = require("chai"), $__chai__ && $__chai__.__esModule && $__chai__ || {default: $__chai__}).default;
+var chaiAsPromised = ($__chai_45_as_45_promised__ = require("chai-as-promised"), $__chai_45_as_45_promised__ && $__chai_45_as_45_promised__.__esModule && $__chai_45_as_45_promised__ || {default: $__chai_45_as_45_promised__}).default;
+var diskCacheFilters = ($___46__46__47_lib_47_cache_45_component_46_js__ = require("../lib/cache-component.js"), $___46__46__47_lib_47_cache_45_component_46_js__ && $___46__46__47_lib_47_cache_45_component_46_js__.__esModule && $___46__46__47_lib_47_cache_45_component_46_js__ || {default: $___46__46__47_lib_47_cache_45_component_46_js__}).diskCacheFilters;
 chai.use(chaiAsPromised);
 var should = chai.should();
 var expect = chai.expect;
-var fs = require('fs');
 var cacheDir = 'temp';
 describe('disk cache filter test', (function() {
   var getCacheId = simpleHandler((function(args) {
@@ -35,7 +41,7 @@ describe('disk cache filter test', (function() {
     var id = args.id;
     return 'Hello, ' + id;
   }), 'void', 'text').addMiddleware(transformFilter(uppercase, 'out'));
-  it('sanity test', async($traceurRuntime.initGeneratorFunction(function $__5() {
+  it('sanity test', async($traceurRuntime.initGeneratorFunction(function $__8() {
     var handler;
     return $traceurRuntime.createGeneratorInstance(function($ctx) {
       while (true)
@@ -57,10 +63,10 @@ describe('disk cache filter test', (function() {
           default:
             return $ctx.end();
         }
-    }, $__5, this);
+    }, $__8, this);
   })));
-  it('basic test', async($traceurRuntime.initGeneratorFunction(function $__6() {
-    var $__4,
+  it('basic test', async($traceurRuntime.initGeneratorFunction(function $__9() {
+    var $__7,
         cacheFilter,
         cacheInvalidationFilter,
         cachedGreet,
@@ -71,7 +77,7 @@ describe('disk cache filter test', (function() {
       while (true)
         switch ($ctx.state) {
           case 0:
-            $__4 = makeDiskCacheFilters({getCacheId: getCacheId}), cacheFilter = $__4.cacheFilter, cacheInvalidationFilter = $__4.cacheInvalidationFilter;
+            $__7 = diskCacheFilters({getCacheId: getCacheId}), cacheFilter = $__7.cacheFilter, cacheInvalidationFilter = $__7.cacheInvalidationFilter;
             cachedGreet = greet.makePrivate().addMiddleware(cacheFilter);
             config = {cacheDir: cacheDir};
             $ctx.state = 14;
@@ -85,7 +91,7 @@ describe('disk cache filter test', (function() {
             break;
           case 4:
             cacheFile = joinPath(cacheDir, 'foo');
-            fs.existsSync(cacheFile).should.equal(false);
+            existsSync(cacheFile).should.equal(false);
             $ctx.state = 16;
             break;
           case 16:
@@ -103,12 +109,12 @@ describe('disk cache filter test', (function() {
             $ctx.state = 12;
             break;
           case 12:
-            fs.readFileSync(cacheFile).toString().should.equal('HELLO, FOO');
+            readFileSync(cacheFile).toString().should.equal('HELLO, FOO');
             $ctx.state = -2;
             break;
           default:
             return $ctx.end();
         }
-    }, $__6, this);
+    }, $__9, this);
   })));
 }));

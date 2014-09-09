@@ -1,18 +1,18 @@
 "use strict";
 Object.defineProperties(exports, {
-  makeCacheFilters: {get: function() {
+  cacheFilters: {get: function() {
       return makeCacheFilters;
     }},
   memoryCacheStore: {get: function() {
       return memoryCacheStore;
     }},
-  makeMemoryCacheFilters: {get: function() {
+  memoryCacheFilters: {get: function() {
       return makeMemoryCacheFilters;
     }},
-  makeDiskCacheFilters: {get: function() {
+  diskCacheFilters: {get: function() {
       return makeDiskCacheFilters;
     }},
-  makeMemcachedFilters: {get: function() {
+  memcachedFilters: {get: function() {
       return makeMemcachedFilters;
     }},
   __esModule: {value: true}

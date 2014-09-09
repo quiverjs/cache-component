@@ -10,16 +10,17 @@ import {
 import pathLib from 'path'
 var { join: joinPath } = pathLib
 
-import { makeDiskCacheFilters } from '../lib/disk-cache.js'
+import fs from 'fs'
+var { existsSync, readFileSync } = fs
 
-var chai = require('chai')
-var chaiAsPromised = require('chai-as-promised')
+import chai from 'chai'
+import chaiAsPromised from 'chai-as-promised'
+
+import { diskCacheFilters } from '../lib/cache-component.js'
 
 chai.use(chaiAsPromised)
 var should = chai.should()
 var expect = chai.expect
-
-var fs = require('fs')
 
 var cacheDir = 'temp'
 
@@ -48,7 +49,7 @@ describe('disk cache filter test', () => {
   it('basic test', async(function*() {
     var {
       cacheFilter, cacheInvalidationFilter 
-    } = makeDiskCacheFilters({getCacheId})
+    } = diskCacheFilters({getCacheId})
 
     var cachedGreet = greet.makePrivate()
       .addMiddleware(cacheFilter)
@@ -59,14 +60,14 @@ describe('disk cache filter test', () => {
 
     var cacheFile = joinPath(cacheDir, 'foo')
 
-    fs.existsSync(cacheFile).should.equal(false)
+    existsSync(cacheFile).should.equal(false)
 
     yield handler({ id: 'foo' })
       .should.eventually.equal('HELLO, FOO')
 
     yield timeout(100)
 
-    fs.readFileSync(cacheFile).toString()
+    readFileSync(cacheFile).toString()
       .should.equal('HELLO, FOO')
   }))
 })

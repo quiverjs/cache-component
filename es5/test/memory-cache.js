@@ -16,8 +16,8 @@ var $__1 = ($__quiver_45_component__ = require("quiver-component"), $__quiver_45
 var childProcess = ($__child_95_process__ = require("child_process"), $__child_95_process__ && $__child_95_process__.__esModule && $__child_95_process__ || {default: $__child_95_process__}).default;
 var spawn = childProcess.spawn;
 var $__3 = ($___46__46__47_lib_47_cache_45_component_46_js__ = require("../lib/cache-component.js"), $___46__46__47_lib_47_cache_45_component_46_js__ && $___46__46__47_lib_47_cache_45_component_46_js__.__esModule && $___46__46__47_lib_47_cache_45_component_46_js__ || {default: $___46__46__47_lib_47_cache_45_component_46_js__}),
-    makeMemoryCacheFilters = $__3.makeMemoryCacheFilters,
-    makeMemcachedFilters = $__3.makeMemcachedFilters;
+    memoryCacheFilters = $__3.memoryCacheFilters,
+    memcachedFilters = $__3.memcachedFilters;
 var createMemcached = ($___46__46__47_lib_47_memcached_46_js__ = require("../lib/memcached.js"), $___46__46__47_lib_47_memcached_46_js__ && $___46__46__47_lib_47_memcached_46_js__.__esModule && $___46__46__47_lib_47_memcached_46_js__ || {default: $___46__46__47_lib_47_memcached_46_js__}).createMemcached;
 var chai = require('chai');
 var chaiAsPromised = require('chai-as-promised');
@@ -141,7 +141,7 @@ describe('cache filter test', (function() {
       while (true)
         switch ($ctx.state) {
           case 0:
-            $__6 = makeMemoryCacheFilters({getCacheId: getCacheId}), cacheFilter = $__6.cacheFilter, cacheInvalidationFilter = $__6.cacheInvalidationFilter;
+            $__6 = memoryCacheFilters({getCacheId: getCacheId}), cacheFilter = $__6.cacheFilter, cacheInvalidationFilter = $__6.cacheInvalidationFilter;
             $__6 = counterBundle.makePrivate().handlerComponents, increment = $__6.increment, reset = $__6.reset;
             increment.addMiddleware(cacheFilter);
             reset.addMiddleware(cacheInvalidationFilter);
@@ -219,7 +219,7 @@ describe('cache filter test', (function() {
         }
     }, $__8, this);
   })));
-  it.only('memcached test', async($traceurRuntime.initGeneratorFunction(function $__9() {
+  it('memcached test', async($traceurRuntime.initGeneratorFunction(function $__9() {
     var server,
         $__6,
         cacheFilter,
@@ -242,7 +242,7 @@ describe('cache filter test', (function() {
               if (code != 0)
                 throw new Error('failed to start memcached test server');
             }));
-            $__6 = makeMemcachedFilters({getCacheId: getCacheId}), cacheFilter = $__6.cacheFilter, cacheInvalidationFilter = $__6.cacheInvalidationFilter;
+            $__6 = memcachedFilters({getCacheId: getCacheId}), cacheFilter = $__6.cacheFilter, cacheInvalidationFilter = $__6.cacheInvalidationFilter;
             $__6 = counterBundle.makePrivate().handlerComponents, increment = $__6.increment, reset = $__6.reset;
             increment.addMiddleware(cacheFilter);
             reset.addMiddleware(cacheInvalidationFilter);
