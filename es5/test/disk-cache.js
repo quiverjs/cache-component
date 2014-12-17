@@ -1,5 +1,5 @@
 "use strict";
-var $__traceur_64_0_46_0_46_58__,
+var $__traceur_64_0_46_0_46_7__,
     $__quiver_45_promise__,
     $__quiver_45_component__,
     $__path__,
@@ -7,7 +7,7 @@ var $__traceur_64_0_46_0_46_58__,
     $__chai__,
     $__chai_45_as_45_promised__,
     $___46__46__47_lib_47_cache_45_component_46_js__;
-($__traceur_64_0_46_0_46_58__ = require("traceur"), $__traceur_64_0_46_0_46_58__ && $__traceur_64_0_46_0_46_58__.__esModule && $__traceur_64_0_46_0_46_58__ || {default: $__traceur_64_0_46_0_46_58__});
+($__traceur_64_0_46_0_46_7__ = require("traceur"), $__traceur_64_0_46_0_46_7__ && $__traceur_64_0_46_0_46_7__.__esModule && $__traceur_64_0_46_0_46_7__ || {default: $__traceur_64_0_46_0_46_7__});
 var $__0 = ($__quiver_45_promise__ = require("quiver-promise"), $__quiver_45_promise__ && $__quiver_45_promise__.__esModule && $__quiver_45_promise__ || {default: $__quiver_45_promise__}),
     async = $__0.async,
     promisify = $__0.promisify,
@@ -20,9 +20,9 @@ var $__1 = ($__quiver_45_component__ = require("quiver-component"), $__quiver_45
 var pathLib = ($__path__ = require("path"), $__path__ && $__path__.__esModule && $__path__ || {default: $__path__}).default;
 var joinPath = pathLib.join;
 var fs = ($__fs__ = require("fs"), $__fs__ && $__fs__.__esModule && $__fs__ || {default: $__fs__}).default;
-var $__7 = fs,
-    existsSync = $__7.existsSync,
-    readFileSync = $__7.readFileSync;
+var $__8 = fs,
+    existsSync = $__8.existsSync,
+    readFileSync = $__8.readFileSync;
 var chai = ($__chai__ = require("chai"), $__chai__ && $__chai__.__esModule && $__chai__ || {default: $__chai__}).default;
 var chaiAsPromised = ($__chai_45_as_45_promised__ = require("chai-as-promised"), $__chai_45_as_45_promised__ && $__chai_45_as_45_promised__.__esModule && $__chai_45_as_45_promised__ || {default: $__chai_45_as_45_promised__}).default;
 var diskCacheFilters = ($___46__46__47_lib_47_cache_45_component_46_js__ = require("../lib/cache-component.js"), $___46__46__47_lib_47_cache_45_component_46_js__ && $___46__46__47_lib_47_cache_45_component_46_js__.__esModule && $___46__46__47_lib_47_cache_45_component_46_js__ || {default: $___46__46__47_lib_47_cache_45_component_46_js__}).diskCacheFilters;
@@ -41,7 +41,7 @@ describe('disk cache filter test', (function() {
     var id = args.id;
     return 'Hello, ' + id;
   }), 'void', 'text').addMiddleware(transformFilter(uppercase, 'out'));
-  it('sanity test', async($traceurRuntime.initGeneratorFunction(function $__8() {
+  it('sanity test', async($traceurRuntime.initGeneratorFunction(function $__10() {
     var handler;
     return $traceurRuntime.createGeneratorInstance(function($ctx) {
       while (true)
@@ -63,10 +63,10 @@ describe('disk cache filter test', (function() {
           default:
             return $ctx.end();
         }
-    }, $__8, this);
+    }, $__10, this);
   })));
-  it('basic test', async($traceurRuntime.initGeneratorFunction(function $__9() {
-    var $__7,
+  it('basic test', async($traceurRuntime.initGeneratorFunction(function $__11() {
+    var $__9,
         cacheFilter,
         cacheInvalidationFilter,
         cachedGreet,
@@ -77,8 +77,9 @@ describe('disk cache filter test', (function() {
       while (true)
         switch ($ctx.state) {
           case 0:
-            $__7 = diskCacheFilters({getCacheId: getCacheId}), cacheFilter = $__7.cacheFilter, cacheInvalidationFilter = $__7.cacheInvalidationFilter;
-            cachedGreet = greet.makePrivate().addMiddleware(cacheFilter);
+            $__9 = diskCacheFilters(), cacheFilter = $__9.cacheFilter, cacheInvalidationFilter = $__9.cacheInvalidationFilter;
+            cacheFilter.implement({getCacheId: getCacheId});
+            cachedGreet = greet.fork().middleware(cacheFilter);
             config = {cacheDir: cacheDir};
             $ctx.state = 14;
             break;
@@ -115,6 +116,6 @@ describe('disk cache filter test', (function() {
           default:
             return $ctx.end();
         }
-    }, $__9, this);
+    }, $__11, this);
   })));
 }));

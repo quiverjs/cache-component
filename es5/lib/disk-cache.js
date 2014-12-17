@@ -3,6 +3,18 @@ Object.defineProperties(exports, {
   diskCacheStoreBundle: {get: function() {
       return diskCacheStoreBundle;
     }},
+  diskCacheFilter: {get: function() {
+      return diskCacheFilter;
+    }},
+  diskCacheInvalidationFilter: {get: function() {
+      return diskCacheInvalidationFilter;
+    }},
+  makeDiskCacheFilter: {get: function() {
+      return makeDiskCacheFilter;
+    }},
+  makeDiskCacheInvalidationFilter: {get: function() {
+      return makeDiskCacheInvalidationFilter;
+    }},
   makeDiskCacheFilters: {get: function() {
       return makeDiskCacheFilters;
     }},
@@ -28,13 +40,13 @@ var $__3 = ($__quiver_45_file_45_stream__ = require("quiver-file-stream"), $__qu
 var pathLib = ($__path__ = require("path"), $__path__ && $__path__.__esModule && $__path__ || {default: $__path__}).default;
 var joinPath = pathLib.join;
 var fs = ($__fs__ = require("fs"), $__fs__ && $__fs__.__esModule && $__fs__ || {default: $__fs__}).default;
-var $__8 = fs,
-    rename = $__8.rename,
-    symlink = $__8.symlink,
-    unlink = $__8.unlink;
+var $__9 = fs,
+    rename = $__9.rename,
+    symlink = $__9.symlink,
+    unlink = $__9.unlink;
 var $__6 = ($__cache_45_filter_46_js__ = require("./cache-filter.js"), $__cache_45_filter_46_js__ && $__cache_45_filter_46_js__.__esModule && $__cache_45_filter_46_js__ || {default: $__cache_45_filter_46_js__}),
-    abstractCacheFilter = $__6.abstractCacheFilter,
-    abstractCacheInvalidationFilter = $__6.abstractCacheInvalidationFilter;
+    makeCacheFilter = $__6.makeCacheFilter,
+    makeCacheInvalidationFilter = $__6.makeCacheInvalidationFilter;
 var $__7 = ($__quiver_45_component__ = require("quiver-component"), $__quiver_45_component__ && $__quiver_45_component__.__esModule && $__quiver_45_component__ || {default: $__quiver_45_component__}),
     handlerBundle = $__7.handlerBundle,
     argsBuilderFilter = $__7.argsBuilderFilter,
@@ -43,6 +55,7 @@ var $__7 = ($__quiver_45_component__ = require("quiver-component"), $__quiver_45
 var moveFile = promisify(rename);
 var linkFile = promisify(symlink);
 var removeFile = promisify(unlink);
+var cacheFileStatsHandler = fileStatsHandler().configAlias({dirPath: 'cacheDir'});
 var cachePathFilter = argsBuilderFilter((function(config) {
   var cacheDir = config.cacheDir;
   return (function(args) {
@@ -52,11 +65,11 @@ var cachePathFilter = argsBuilderFilter((function(config) {
   });
 }));
 var diskCacheStoreBundle = handlerBundle((function(config) {
-  var $__8 = config,
-      cacheDir = $__8.cacheDir,
-      getFileStats = $__8.getFileStats;
-  var getCacheEntry = async($traceurRuntime.initGeneratorFunction(function $__9(args) {
-    var $__8,
+  var $__10 = config,
+      cacheDir = $__10.cacheDir,
+      getFileStats = $__10.getFileStats;
+  var getCacheEntry = async($traceurRuntime.initGeneratorFunction(function $__12(args) {
+    var $__11,
         cacheId,
         cachePath,
         fileStats,
@@ -65,7 +78,7 @@ var diskCacheStoreBundle = handlerBundle((function(config) {
       while (true)
         switch ($ctx.state) {
           case 0:
-            $__8 = args, cacheId = $__8.cacheId, cachePath = $__8.cachePath;
+            $__11 = args, cacheId = $__11.cacheId, cachePath = $__11.cachePath;
             $ctx.state = 12;
             break;
           case 12:
@@ -93,9 +106,9 @@ var diskCacheStoreBundle = handlerBundle((function(config) {
           default:
             return $ctx.end();
         }
-    }, $__9, this);
+    }, $__12, this);
   }));
-  var setCacheEntry = async($traceurRuntime.initGeneratorFunction(function $__10(args, streamable) {
+  var setCacheEntry = async($traceurRuntime.initGeneratorFunction(function $__13(args, streamable) {
     var cachePath,
         filePath,
         readStream,
@@ -167,7 +180,7 @@ var diskCacheStoreBundle = handlerBundle((function(config) {
           default:
             return $ctx.end();
         }
-    }, $__10, this);
+    }, $__13, this);
   }));
   var removeCacheEntry = (function(args) {
     var cachePath = args.cachePath;
@@ -178,14 +191,17 @@ var diskCacheStoreBundle = handlerBundle((function(config) {
     setCacheEntry: setCacheEntry,
     removeCacheEntry: removeCacheEntry
   };
-})).simpleHandler('getCacheEntry', 'void', 'streamable').simpleHandler('setCacheEntry', 'streamable', 'void').simpleHandler('removeCacheEntry', 'void', 'void').addMiddleware(cachePathFilter).addMiddleware(inputHandlerMiddleware(fileStatsHandler().addMiddleware(configAliasMiddleware({dirPath: 'cacheDir'})), 'getFileStats'));
-var cacheComponents = diskCacheStoreBundle.handlerComponents;
-var abstractDiskCacheFilter = abstractCacheFilter.implement(cacheComponents);
-var abstractDiskCacheInvalidationFilter = abstractCacheInvalidationFilter.implement(cacheComponents);
-var makeDiskCacheFilters = (function(implMap) {
-  var privateTable = {};
-  return {
-    cacheFilter: abstractDiskCacheFilter.implement(implMap, privateTable).concretize(),
-    cacheInvalidationFilter: abstractDiskCacheInvalidationFilter.implement(implMap, privateTable).concretize()
-  };
+})).simpleHandler('getCacheEntry', 'void', 'streamable').simpleHandler('setCacheEntry', 'streamable', 'void').simpleHandler('removeCacheEntry', 'void', 'void').middleware(cachePathFilter).inputHandler(cacheFileStatsHandler, 'getFileStats');
+var diskCacheComponents = diskCacheStoreBundle.toHandlerComponents();
+var forkTable = {};
+var diskCacheFilter = makeCacheFilter(forkTable).implement(diskCacheComponents);
+var diskCacheInvalidationFilter = makeCacheInvalidationFilter(forkTable).implement(diskCacheComponents);
+var makeDiskCacheFilter = diskCacheFilter.factory();
+var makeDiskCacheInvalidationFilter = diskCacheInvalidationFilter.factory();
+var makeDiskCacheFilters = (function() {
+  var forkTable = arguments[0] !== (void 0) ? arguments[0] : {};
+  return ({
+    cacheFilter: makeDiskCacheFilter(forkTable),
+    cacheInvalidationFilter: makeDiskCacheInvalidationFilter(forkTable)
+  });
 });

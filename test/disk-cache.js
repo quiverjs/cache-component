@@ -49,10 +49,12 @@ describe('disk cache filter test', () => {
   it('basic test', async(function*() {
     var {
       cacheFilter, cacheInvalidationFilter 
-    } = diskCacheFilters({getCacheId})
+    } = diskCacheFilters()
 
-    var cachedGreet = greet.makePrivate()
-      .addMiddleware(cacheFilter)
+    cacheFilter.implement({ getCacheId })
+
+    var cachedGreet = greet.fork()
+      .middleware(cacheFilter)
 
     var config = { cacheDir }
 

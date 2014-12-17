@@ -1,13 +1,19 @@
 "use strict";
 Object.defineProperties(exports, {
-  cacheStoreProtocol: {get: function() {
-      return cacheStoreProtocol;
+  cacheFilter: {get: function() {
+      return cacheFilter;
     }},
-  abstractCacheFilter: {get: function() {
-      return abstractCacheFilter;
+  cacheInvalidationFilter: {get: function() {
+      return cacheInvalidationFilter;
     }},
-  abstractCacheInvalidationFilter: {get: function() {
-      return abstractCacheInvalidationFilter;
+  makeCacheFilter: {get: function() {
+      return makeCacheFilter;
+    }},
+  makeCacheInvalidationFilter: {get: function() {
+      return makeCacheInvalidationFilter;
+    }},
+  makeCacheFilters: {get: function() {
+      return makeCacheFilters;
     }},
   __esModule: {value: true}
 });
@@ -19,16 +25,17 @@ var copy = ($__quiver_45_object__ = require("quiver-object"), $__quiver_45_objec
 var async = ($__quiver_45_promise__ = require("quiver-promise"), $__quiver_45_promise__ && $__quiver_45_promise__.__esModule && $__quiver_45_promise__ || {default: $__quiver_45_promise__}).async;
 var reuseStreamable = ($__quiver_45_stream_45_util__ = require("quiver-stream-util"), $__quiver_45_stream_45_util__ && $__quiver_45_stream_45_util__.__esModule && $__quiver_45_stream_45_util__ || {default: $__quiver_45_stream_45_util__}).reuseStreamable;
 var $__3 = ($__quiver_45_component__ = require("quiver-component"), $__quiver_45_component__ && $__quiver_45_component__.__esModule && $__quiver_45_component__ || {default: $__quiver_45_component__}),
-    abstractComponent = $__3.abstractComponent,
-    protocol = $__3.protocol,
+    abstractHandler = $__3.abstractHandler,
     streamFilter = $__3.streamFilter,
-    argsBuilderFilter = $__3.argsBuilderFilter;
-var cacheIdProtocol = protocol('cache id protocol').simpleHandler('getCacheId', 'void', 'text');
-var cacheStoreProtocol = protocol('cacheProtocol').subprotocol(cacheIdProtocol).simpleHandler('getCacheEntry', 'void', 'streamable').simpleHandler('setCacheEntry', 'streamable', 'void').simpleHandler('removeCacheEntry', 'void', 'void');
+    argsBuilderFilter = $__3.argsBuilderFilter,
+    simpleHandlerLoader = $__3.simpleHandlerLoader;
+var getCacheId = abstractHandler('getCacheId').setLoader(simpleHandlerLoader('void', 'text'));
+var getCacheEntry = abstractHandler('getCacheEntry').setLoader(simpleHandlerLoader('void', 'streamable'));
+var setCacheEntry = abstractHandler('setCacheEntry').setLoader(simpleHandlerLoader('streamable', 'void'));
+var removeCacheEntry = abstractHandler('removeCacheEntry').setLoader(simpleHandlerLoader('void', 'void'));
 var _cacheId = Symbol('cacheId');
 var cacheIdFilter = argsBuilderFilter((function(config) {
-  var cacheProtocol = config.cacheProtocol;
-  var getCacheId = cacheProtocol.getCacheId;
+  var getCacheId = config.getCacheId;
   return async($traceurRuntime.initGeneratorFunction(function $__5(args) {
     return $traceurRuntime.createGeneratorInstance(function($ctx) {
       while (true)
@@ -49,10 +56,9 @@ var cacheIdFilter = argsBuilderFilter((function(config) {
         }
     }, $__5, this);
   }));
-}));
+})).inputHandlers({getCacheId: getCacheId});
 var cacheFilter = streamFilter((function(config, handler) {
-  var cacheProtocol = config.cacheProtocol;
-  var $__4 = cacheProtocol,
+  var $__4 = config,
       getCacheId = $__4.getCacheId,
       getCacheEntry = $__4.getCacheEntry,
       setCacheEntry = $__4.setCacheEntry;
@@ -144,10 +150,12 @@ var cacheFilter = streamFilter((function(config, handler) {
         }
     }, $__5, this);
   }));
-})).addMiddleware(cacheIdFilter);
+})).middleware(cacheIdFilter).inputHandlers({
+  getCacheEntry: getCacheEntry,
+  setCacheEntry: setCacheEntry
+});
 var cacheInvalidationFilter = argsBuilderFilter((function(config) {
-  var cacheProtocol = config.cacheProtocol;
-  var removeCacheEntry = cacheProtocol.removeCacheEntry;
+  var removeCacheEntry = config.removeCacheEntry;
   return async($traceurRuntime.initGeneratorFunction(function $__5(args) {
     var cacheId;
     return $traceurRuntime.createGeneratorInstance(function($ctx) {
@@ -177,6 +185,13 @@ var cacheInvalidationFilter = argsBuilderFilter((function(config) {
         }
     }, $__5, this);
   }));
-})).addMiddleware(cacheIdFilter);
-var abstractCacheFilter = abstractComponent('cacheProtocol', cacheStoreProtocol, cacheFilter);
-var abstractCacheInvalidationFilter = abstractComponent('cacheProtocol', cacheStoreProtocol, cacheInvalidationFilter);
+})).middleware(cacheIdFilter).inputHandlers({removeCacheEntry: removeCacheEntry});
+var makeCacheFilter = cacheFilter.factory();
+var makeCacheInvalidationFilter = cacheInvalidationFilter.factory();
+var makeCacheFilters = (function() {
+  var forkTable = arguments[0] !== (void 0) ? arguments[0] : {};
+  return ({
+    cacheFilter: makeCacheFilter(forkTable),
+    cacheInvalidationFilter: makeCacheInvalidationFilter(forkTable)
+  });
+});

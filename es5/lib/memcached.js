@@ -6,11 +6,17 @@ Object.defineProperties(exports, {
   memcachedStoreBundle: {get: function() {
       return memcachedStoreBundle;
     }},
-  abstractMemcachedCacheFilter: {get: function() {
-      return abstractMemcachedCacheFilter;
+  memcachedFilter: {get: function() {
+      return memcachedFilter;
     }},
-  abstractMemcachedCacheInvalidationFilter: {get: function() {
-      return abstractMemcachedCacheInvalidationFilter;
+  memcachedInvalidationFilter: {get: function() {
+      return memcachedInvalidationFilter;
+    }},
+  makeMemcachedFilter: {get: function() {
+      return makeMemcachedFilter;
+    }},
+  makeMemcachedInvalidationFilter: {get: function() {
+      return makeMemcachedInvalidationFilter;
     }},
   makeMemcachedFilters: {get: function() {
       return makeMemcachedFilters;
@@ -33,16 +39,16 @@ var $__2 = ($__quiver_45_stream_45_util__ = require("quiver-stream-util"), $__qu
     bufferToStreamable = $__2.bufferToStreamable;
 var handlerBundle = ($__quiver_45_component__ = require("quiver-component"), $__quiver_45_component__ && $__quiver_45_component__.__esModule && $__quiver_45_component__ || {default: $__quiver_45_component__}).handlerBundle;
 var $__4 = ($__cache_45_filter_46_js__ = require("./cache-filter.js"), $__cache_45_filter_46_js__ && $__cache_45_filter_46_js__.__esModule && $__cache_45_filter_46_js__ || {default: $__cache_45_filter_46_js__}),
-    abstractCacheFilter = $__4.abstractCacheFilter,
-    abstractCacheInvalidationFilter = $__4.abstractCacheInvalidationFilter;
+    makeCacheFilter = $__4.makeCacheFilter,
+    makeCacheInvalidationFilter = $__4.makeCacheInvalidationFilter;
 var Memcached = ($__memcached__ = require("memcached"), $__memcached__ && $__memcached__.__esModule && $__memcached__ || {default: $__memcached__}).default;
 var promisifyMethod = (function(object, method) {
   return promisify((function() {
-    var $__9;
+    var $__10;
     for (var args = [],
         $__6 = 0; $__6 < arguments.length; $__6++)
       args[$__6] = arguments[$__6];
-    return ($__9 = object)[method].apply($__9, $traceurRuntime.spread(args));
+    return ($__10 = object)[method].apply($__10, $traceurRuntime.spread(args));
   }));
 });
 var promisifyMethods = (function(object, methods) {
@@ -68,7 +74,7 @@ var memcachedStoreBundle = handlerBundle((function(config) {
       return data ? bufferToStreamable(data) : reject(error(404, 'not found'));
     }));
   });
-  var setCacheEntry = async($traceurRuntime.initGeneratorFunction(function $__10(args, streamable) {
+  var setCacheEntry = async($traceurRuntime.initGeneratorFunction(function $__11(args, streamable) {
     var cacheId,
         buffer;
     return $traceurRuntime.createGeneratorInstance(function($ctx) {
@@ -95,7 +101,7 @@ var memcachedStoreBundle = handlerBundle((function(config) {
           default:
             return $ctx.end();
         }
-    }, $__10, this);
+    }, $__11, this);
   }));
   var removeCacheEntry = (function(args) {
     var cacheId = args.cacheId;
@@ -107,13 +113,16 @@ var memcachedStoreBundle = handlerBundle((function(config) {
     removeCacheEntry: removeCacheEntry
   };
 })).simpleHandler('getCacheEntry', 'void', 'streamable').simpleHandler('setCacheEntry', 'streamable', 'void').simpleHandler('removeCacheEntry', 'void', 'void');
-var cacheComponents = memcachedStoreBundle.handlerComponents;
-var abstractMemcachedCacheFilter = abstractCacheFilter.implement(cacheComponents);
-var abstractMemcachedCacheInvalidationFilter = abstractCacheInvalidationFilter.implement(cacheComponents);
-var makeMemcachedFilters = (function(implMap) {
-  var privateTable = {};
-  return {
-    cacheFilter: abstractMemcachedCacheFilter.implement(implMap, privateTable).concretize(),
-    cacheInvalidationFilter: abstractMemcachedCacheInvalidationFilter.implement(implMap, privateTable).concretize()
-  };
+var memcachedComponents = memcachedStoreBundle.toHandlerComponents();
+var forkTable = {};
+var memcachedFilter = makeCacheFilter(forkTable).implement(memcachedComponents);
+var memcachedInvalidationFilter = makeCacheInvalidationFilter(forkTable).implement(memcachedComponents);
+var makeMemcachedFilter = memcachedFilter.factory();
+var makeMemcachedInvalidationFilter = memcachedInvalidationFilter.factory();
+var makeMemcachedFilters = (function() {
+  var forkTable = arguments[0] !== (void 0) ? arguments[0] : {};
+  return ({
+    cacheFilter: makeMemcachedFilter(forkTable),
+    cacheInvalidationFilter: makeMemcachedInvalidationFilter(forkTable)
+  });
 });

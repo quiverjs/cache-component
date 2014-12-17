@@ -10,7 +10,7 @@ import childProcess from 'child_process'
 var { spawn } = childProcess
 
 import { 
-  memoryCacheFilters,
+  memoryCacheFilters, 
   memcachedFilters
 } from '../lib/cache-component.js'
 
@@ -23,7 +23,7 @@ chai.use(chaiAsPromised)
 var should = chai.should()
 var expect = chai.expect
 
-var memcachedPort = '11213'
+var memcachedPort = '11212'
 
 describe('cache filter test', () => {
   var getCacheId = simpleHandler(
@@ -56,7 +56,7 @@ describe('cache filter test', () => {
   .simpleHandler('increment', 'void', 'text')
   .simpleHandler('reset', 'void', 'void')
 
-  var { increment, reset } = counterBundle.handlerComponents
+  var { increment, reset } = counterBundle.toHandlerComponents()
 
   it('sanity test', async(function*() {
     var config = { }
@@ -87,14 +87,18 @@ describe('cache filter test', () => {
 
   it('memory cache test', async(function*() {
     var {
-      cacheFilter, cacheInvalidationFilter 
-    } = memoryCacheFilters({getCacheId})
+      cacheFilter,
+      cacheInvalidationFilter
+    } = memoryCacheFilters()
 
-    var { increment, reset } = counterBundle.makePrivate()
-      .handlerComponents
+    cacheFilter.implement({ getCacheId })
+    cacheInvalidationFilter.implement({ getCacheId })
 
-    increment.addMiddleware(cacheFilter)
-    reset.addMiddleware(cacheInvalidationFilter)
+    var { increment, reset } = counterBundle.fork()
+      .toHandlerComponents()
+
+    increment.middleware(cacheFilter)
+    reset.middleware(cacheInvalidationFilter)
 
     var config = { }
 
@@ -139,13 +143,16 @@ describe('cache filter test', () => {
 
     var {
       cacheFilter, cacheInvalidationFilter 
-    } = memcachedFilters({getCacheId})
+    } = memcachedFilters()
 
-    var { increment, reset } = counterBundle.makePrivate()
+    cacheFilter.implement({ getCacheId })
+    cacheInvalidationFilter.implement({ getCacheId })
+
+    var { increment, reset } = counterBundle.fork()
       .handlerComponents
 
-    increment.addMiddleware(cacheFilter)
-    reset.addMiddleware(cacheInvalidationFilter)
+    increment.middleware(cacheFilter)
+    reset.middleware(cacheInvalidationFilter)
 
     var memcachedServers = '127.0.0.1:' + memcachedPort
 

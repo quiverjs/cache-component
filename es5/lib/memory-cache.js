@@ -3,6 +3,21 @@ Object.defineProperties(exports, {
   memoryCacheStoreBundle: {get: function() {
       return memoryCacheStoreBundle;
     }},
+  memoryCacheFilter: {get: function() {
+      return memoryCacheFilter;
+    }},
+  memoryCacheInvalidationFilter: {get: function() {
+      return memoryCacheInvalidationFilter;
+    }},
+  makeMemoryCacheStoreBundle: {get: function() {
+      return makeMemoryCacheStoreBundle;
+    }},
+  makeMemoryCacheFilter: {get: function() {
+      return makeMemoryCacheFilter;
+    }},
+  makeMemoryCacheInvalidationFilter: {get: function() {
+      return makeMemoryCacheInvalidationFilter;
+    }},
   makeMemoryCacheFilters: {get: function() {
       return makeMemoryCacheFilters;
     }},
@@ -26,8 +41,8 @@ var $__3 = ($__quiver_45_component__ = require("quiver-component"), $__quiver_45
     streamHandlerBuilder = $__3.streamHandlerBuilder,
     handlerBundle = $__3.handlerBundle;
 var $__4 = ($__cache_45_filter_46_js__ = require("./cache-filter.js"), $__cache_45_filter_46_js__ && $__cache_45_filter_46_js__.__esModule && $__cache_45_filter_46_js__ || {default: $__cache_45_filter_46_js__}),
-    abstractCacheFilter = $__4.abstractCacheFilter,
-    abstractCacheInvalidationFilter = $__4.abstractCacheInvalidationFilter;
+    makeCacheFilter = $__4.makeCacheFilter,
+    makeCacheInvalidationFilter = $__4.makeCacheInvalidationFilter;
 var inMemoryStreamable = async($traceurRuntime.initGeneratorFunction(function $__6(streamable) {
   var $__7,
       $__8,
@@ -135,13 +150,17 @@ var memoryCacheStoreBundle = handlerBundle((function(config) {
     removeCacheEntry: removeCacheEntry
   };
 })).simpleHandler('getCacheEntry', 'void', 'streamable').simpleHandler('setCacheEntry', 'streamable', 'void').simpleHandler('removeCacheEntry', 'void', 'void');
-var cacheComponents = memoryCacheStoreBundle.handlerComponents;
-var abstractMemoryCacheFilter = abstractCacheFilter.implement(cacheComponents);
-var abstractMemoryCacheInvalidationFilter = abstractCacheInvalidationFilter.implement(cacheComponents);
-var makeMemoryCacheFilters = (function(implMap) {
-  var privateTable = {};
-  return {
-    cacheFilter: abstractMemoryCacheFilter.implement(implMap, privateTable).concretize(),
-    cacheInvalidationFilter: abstractMemoryCacheInvalidationFilter.implement(implMap, privateTable).concretize()
-  };
+var memoryCacheComponents = memoryCacheStoreBundle.toHandlerComponents();
+var forkTable = {};
+var memoryCacheFilter = makeCacheFilter(forkTable).implement(memoryCacheComponents);
+var memoryCacheInvalidationFilter = makeCacheInvalidationFilter(forkTable).implement(memoryCacheComponents);
+var makeMemoryCacheStoreBundle = memoryCacheStoreBundle.factory();
+var makeMemoryCacheFilter = memoryCacheFilter.factory();
+var makeMemoryCacheInvalidationFilter = memoryCacheInvalidationFilter.factory();
+var makeMemoryCacheFilters = (function() {
+  var forkTable = arguments[0] !== (void 0) ? arguments[0] : {};
+  return ({
+    cacheFilter: makeMemoryCacheFilter(forkTable),
+    cacheInvalidationFilter: makeMemoryCacheInvalidationFilter(forkTable)
+  });
 });

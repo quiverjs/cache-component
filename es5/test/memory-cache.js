@@ -1,11 +1,11 @@
 "use strict";
-var $__traceur_64_0_46_0_46_58__,
+var $__traceur_64_0_46_0_46_7__,
     $__quiver_45_promise__,
     $__quiver_45_component__,
     $__child_95_process__,
     $___46__46__47_lib_47_cache_45_component_46_js__,
     $___46__46__47_lib_47_memcached_46_js__;
-($__traceur_64_0_46_0_46_58__ = require("traceur"), $__traceur_64_0_46_0_46_58__ && $__traceur_64_0_46_0_46_58__.__esModule && $__traceur_64_0_46_0_46_58__ || {default: $__traceur_64_0_46_0_46_58__});
+($__traceur_64_0_46_0_46_7__ = require("traceur"), $__traceur_64_0_46_0_46_7__ && $__traceur_64_0_46_0_46_7__.__esModule && $__traceur_64_0_46_0_46_7__ || {default: $__traceur_64_0_46_0_46_7__});
 var $__0 = ($__quiver_45_promise__ = require("quiver-promise"), $__quiver_45_promise__ && $__quiver_45_promise__.__esModule && $__quiver_45_promise__ || {default: $__quiver_45_promise__}),
     async = $__0.async,
     timeout = $__0.timeout;
@@ -24,7 +24,7 @@ var chaiAsPromised = require('chai-as-promised');
 chai.use(chaiAsPromised);
 var should = chai.should();
 var expect = chai.expect;
-var memcachedPort = '11213';
+var memcachedPort = '11212';
 describe('cache filter test', (function() {
   var getCacheId = simpleHandler((function(args) {
     return args.id;
@@ -39,10 +39,10 @@ describe('cache filter test', (function() {
       return id + '-' + count;
     });
     var reset = (function(args) {
-      var $__6;
-      var $__5 = args,
-          id = $__5.id,
-          count = ($__6 = $__5.count) === void 0 ? 0 : $__6;
+      var $__7;
+      var $__6 = args,
+          id = $__6.id,
+          count = ($__7 = $__6.count) === void 0 ? 0 : $__7;
       table[id] = count;
     });
     return {
@@ -50,10 +50,10 @@ describe('cache filter test', (function() {
       reset: reset
     };
   })).simpleHandler('increment', 'void', 'text').simpleHandler('reset', 'void', 'void');
-  var $__6 = counterBundle.handlerComponents,
+  var $__6 = counterBundle.toHandlerComponents(),
       increment = $__6.increment,
       reset = $__6.reset;
-  it('sanity test', async($traceurRuntime.initGeneratorFunction(function $__7() {
+  it('sanity test', async($traceurRuntime.initGeneratorFunction(function $__9() {
     var config,
         counterHandler,
         resetHandler;
@@ -126,12 +126,13 @@ describe('cache filter test', (function() {
           default:
             return $ctx.end();
         }
-    }, $__7, this);
+    }, $__9, this);
   })));
-  it('memory cache test', async($traceurRuntime.initGeneratorFunction(function $__8() {
-    var $__6,
+  it('memory cache test', async($traceurRuntime.initGeneratorFunction(function $__10() {
+    var $__7,
         cacheFilter,
         cacheInvalidationFilter,
+        $__8,
         increment,
         reset,
         config,
@@ -141,10 +142,12 @@ describe('cache filter test', (function() {
       while (true)
         switch ($ctx.state) {
           case 0:
-            $__6 = memoryCacheFilters({getCacheId: getCacheId}), cacheFilter = $__6.cacheFilter, cacheInvalidationFilter = $__6.cacheInvalidationFilter;
-            $__6 = counterBundle.makePrivate().handlerComponents, increment = $__6.increment, reset = $__6.reset;
-            increment.addMiddleware(cacheFilter);
-            reset.addMiddleware(cacheInvalidationFilter);
+            $__7 = memoryCacheFilters(), cacheFilter = $__7.cacheFilter, cacheInvalidationFilter = $__7.cacheInvalidationFilter;
+            cacheFilter.implement({getCacheId: getCacheId});
+            cacheInvalidationFilter.implement({getCacheId: getCacheId});
+            $__8 = counterBundle.fork().toHandlerComponents(), increment = $__8.increment, reset = $__8.reset;
+            increment.middleware(cacheFilter);
+            reset.middleware(cacheInvalidationFilter);
             config = {};
             $ctx.state = 38;
             break;
@@ -217,13 +220,14 @@ describe('cache filter test', (function() {
           default:
             return $ctx.end();
         }
-    }, $__8, this);
+    }, $__10, this);
   })));
-  it('memcached test', async($traceurRuntime.initGeneratorFunction(function $__9() {
+  it('memcached test', async($traceurRuntime.initGeneratorFunction(function $__11() {
     var server,
-        $__6,
+        $__7,
         cacheFilter,
         cacheInvalidationFilter,
+        $__8,
         increment,
         reset,
         memcachedServers,
@@ -242,10 +246,12 @@ describe('cache filter test', (function() {
               if (code != 0)
                 throw new Error('failed to start memcached test server');
             }));
-            $__6 = memcachedFilters({getCacheId: getCacheId}), cacheFilter = $__6.cacheFilter, cacheInvalidationFilter = $__6.cacheInvalidationFilter;
-            $__6 = counterBundle.makePrivate().handlerComponents, increment = $__6.increment, reset = $__6.reset;
-            increment.addMiddleware(cacheFilter);
-            reset.addMiddleware(cacheInvalidationFilter);
+            $__7 = memcachedFilters(), cacheFilter = $__7.cacheFilter, cacheInvalidationFilter = $__7.cacheInvalidationFilter;
+            cacheFilter.implement({getCacheId: getCacheId});
+            cacheInvalidationFilter.implement({getCacheId: getCacheId});
+            $__8 = counterBundle.fork().handlerComponents, increment = $__8.increment, reset = $__8.reset;
+            increment.middleware(cacheFilter);
+            reset.middleware(cacheInvalidationFilter);
             memcachedServers = '127.0.0.1:' + memcachedPort;
             memcached = createMemcached(memcachedServers);
             config = {memcachedServers: memcachedServers};
@@ -359,6 +365,6 @@ describe('cache filter test', (function() {
           default:
             return $ctx.end();
         }
-    }, $__9, this);
+    }, $__11, this);
   })));
 }));
