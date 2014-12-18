@@ -149,7 +149,7 @@ describe('cache filter test', () => {
     cacheInvalidationFilter.implement({ getCacheId })
 
     var { increment, reset } = counterBundle.fork()
-      .handlerComponents
+      .toHandlerComponents()
 
     increment.middleware(cacheFilter)
     reset.middleware(cacheInvalidationFilter)

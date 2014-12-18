@@ -249,7 +249,7 @@ describe('cache filter test', (function() {
             $__7 = memcachedFilters(), cacheFilter = $__7.cacheFilter, cacheInvalidationFilter = $__7.cacheInvalidationFilter;
             cacheFilter.implement({getCacheId: getCacheId});
             cacheInvalidationFilter.implement({getCacheId: getCacheId});
-            $__8 = counterBundle.fork().handlerComponents, increment = $__8.increment, reset = $__8.reset;
+            $__8 = counterBundle.fork().toHandlerComponents(), increment = $__8.increment, reset = $__8.reset;
             increment.middleware(cacheFilter);
             reset.middleware(cacheInvalidationFilter);
             memcachedServers = '127.0.0.1:' + memcachedPort;
