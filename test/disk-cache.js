@@ -1,11 +1,11 @@
-import 'traceur'
+import 'quiver-core/traceur'
 
-import { async, promisify, timeout } from 'quiver-promise'
+import { async, promisify, timeout } from 'quiver-core/promise'
 
 import { 
   simpleHandler, simpleHandlerBuilder,
   handlerBundle, transformFilter
-} from 'quiver-component'
+} from 'quiver-core/component'
 
 import pathLib from 'path'
 var { join: joinPath } = pathLib

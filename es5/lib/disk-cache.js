@@ -20,21 +20,21 @@ Object.defineProperties(exports, {
     }},
   __esModule: {value: true}
 });
-var $__quiver_45_stream_45_util__,
-    $__quiver_45_promise__,
+var $__quiver_45_core_47_stream_45_util__,
     $__quiver_45_file_45_component__,
-    $__quiver_45_file_45_stream__,
+    $__quiver_45_core_47_promise__,
+    $__quiver_45_core_47_file_45_stream__,
     $__path__,
     $__fs__,
     $__cache_45_filter_46_js__,
-    $__quiver_45_component__;
-var pipeStream = ($__quiver_45_stream_45_util__ = require("quiver-stream-util"), $__quiver_45_stream_45_util__ && $__quiver_45_stream_45_util__.__esModule && $__quiver_45_stream_45_util__ || {default: $__quiver_45_stream_45_util__}).pipeStream;
-var $__1 = ($__quiver_45_promise__ = require("quiver-promise"), $__quiver_45_promise__ && $__quiver_45_promise__.__esModule && $__quiver_45_promise__ || {default: $__quiver_45_promise__}),
-    async = $__1.async,
-    promisify = $__1.promisify,
-    reject = $__1.reject;
+    $__quiver_45_core_47_component__;
+var pipeStream = ($__quiver_45_core_47_stream_45_util__ = require("quiver-core/stream-util"), $__quiver_45_core_47_stream_45_util__ && $__quiver_45_core_47_stream_45_util__.__esModule && $__quiver_45_core_47_stream_45_util__ || {default: $__quiver_45_core_47_stream_45_util__}).pipeStream;
 var fileStatsHandler = ($__quiver_45_file_45_component__ = require("quiver-file-component"), $__quiver_45_file_45_component__ && $__quiver_45_file_45_component__.__esModule && $__quiver_45_file_45_component__ || {default: $__quiver_45_file_45_component__}).fileStatsHandler;
-var $__3 = ($__quiver_45_file_45_stream__ = require("quiver-file-stream"), $__quiver_45_file_45_stream__ && $__quiver_45_file_45_stream__.__esModule && $__quiver_45_file_45_stream__ || {default: $__quiver_45_file_45_stream__}),
+var $__2 = ($__quiver_45_core_47_promise__ = require("quiver-core/promise"), $__quiver_45_core_47_promise__ && $__quiver_45_core_47_promise__.__esModule && $__quiver_45_core_47_promise__ || {default: $__quiver_45_core_47_promise__}),
+    async = $__2.async,
+    promisify = $__2.promisify,
+    reject = $__2.reject;
+var $__3 = ($__quiver_45_core_47_file_45_stream__ = require("quiver-core/file-stream"), $__quiver_45_core_47_file_45_stream__ && $__quiver_45_core_47_file_45_stream__.__esModule && $__quiver_45_core_47_file_45_stream__ || {default: $__quiver_45_core_47_file_45_stream__}),
     fileStreamable = $__3.fileStreamable,
     fileWriteStream = $__3.fileWriteStream;
 var pathLib = ($__path__ = require("path"), $__path__ && $__path__.__esModule && $__path__ || {default: $__path__}).default;
@@ -47,7 +47,7 @@ var $__9 = fs,
 var $__6 = ($__cache_45_filter_46_js__ = require("./cache-filter.js"), $__cache_45_filter_46_js__ && $__cache_45_filter_46_js__.__esModule && $__cache_45_filter_46_js__ || {default: $__cache_45_filter_46_js__}),
     makeCacheFilter = $__6.makeCacheFilter,
     makeCacheInvalidationFilter = $__6.makeCacheInvalidationFilter;
-var $__7 = ($__quiver_45_component__ = require("quiver-component"), $__quiver_45_component__ && $__quiver_45_component__.__esModule && $__quiver_45_component__ || {default: $__quiver_45_component__}),
+var $__7 = ($__quiver_45_core_47_component__ = require("quiver-core/component"), $__quiver_45_core_47_component__ && $__quiver_45_core_47_component__.__esModule && $__quiver_45_core_47_component__ || {default: $__quiver_45_core_47_component__}),
     handlerBundle = $__7.handlerBundle,
     argsBuilderFilter = $__7.argsBuilderFilter,
     configAliasMiddleware = $__7.configAliasMiddleware,

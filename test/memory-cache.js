@@ -1,10 +1,10 @@
-import 'traceur'
+import 'quiver-core/traceur'
 
-import { async, timeout } from 'quiver-promise'
+import { async, timeout } from 'quiver-core/promise'
 import { 
   simpleHandler, simpleHandlerBuilder,
   handlerBundle
-} from 'quiver-component'
+} from 'quiver-core/component'
 
 import childProcess from 'child_process'
 var { spawn } = childProcess

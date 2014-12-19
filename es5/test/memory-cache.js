@@ -1,15 +1,15 @@
 "use strict";
-var $__traceur_64_0_46_0_46_7__,
-    $__quiver_45_promise__,
-    $__quiver_45_component__,
+var $__quiver_45_core_47_traceur__,
+    $__quiver_45_core_47_promise__,
+    $__quiver_45_core_47_component__,
     $__child_95_process__,
     $___46__46__47_lib_47_cache_45_component_46_js__,
     $___46__46__47_lib_47_memcached_46_js__;
-($__traceur_64_0_46_0_46_7__ = require("traceur"), $__traceur_64_0_46_0_46_7__ && $__traceur_64_0_46_0_46_7__.__esModule && $__traceur_64_0_46_0_46_7__ || {default: $__traceur_64_0_46_0_46_7__});
-var $__0 = ($__quiver_45_promise__ = require("quiver-promise"), $__quiver_45_promise__ && $__quiver_45_promise__.__esModule && $__quiver_45_promise__ || {default: $__quiver_45_promise__}),
+($__quiver_45_core_47_traceur__ = require("quiver-core/traceur"), $__quiver_45_core_47_traceur__ && $__quiver_45_core_47_traceur__.__esModule && $__quiver_45_core_47_traceur__ || {default: $__quiver_45_core_47_traceur__});
+var $__0 = ($__quiver_45_core_47_promise__ = require("quiver-core/promise"), $__quiver_45_core_47_promise__ && $__quiver_45_core_47_promise__.__esModule && $__quiver_45_core_47_promise__ || {default: $__quiver_45_core_47_promise__}),
     async = $__0.async,
     timeout = $__0.timeout;
-var $__1 = ($__quiver_45_component__ = require("quiver-component"), $__quiver_45_component__ && $__quiver_45_component__.__esModule && $__quiver_45_component__ || {default: $__quiver_45_component__}),
+var $__1 = ($__quiver_45_core_47_component__ = require("quiver-core/component"), $__quiver_45_core_47_component__ && $__quiver_45_core_47_component__.__esModule && $__quiver_45_core_47_component__ || {default: $__quiver_45_core_47_component__}),
     simpleHandler = $__1.simpleHandler,
     simpleHandlerBuilder = $__1.simpleHandlerBuilder,
     handlerBundle = $__1.handlerBundle;
