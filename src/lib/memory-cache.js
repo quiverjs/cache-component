@@ -10,7 +10,7 @@ import {
   makeCacheFilter, makeCacheInvalidationFilter
 } from './cache-filter.js'
 
-var inMemoryStreamable = async(function*(streamable) {
+let inMemoryStreamable = async(function*(streamable) {
   streamable = yield reuseStreamable(streamable)
 
   if(!streamable.offMemory) return streamable
@@ -23,15 +23,15 @@ var inMemoryStreamable = async(function*(streamable) {
   return streamable
 })
 
-export var memoryCacheStoreBundle = handlerBundle(
+export let memoryCacheStoreBundle = handlerBundle(
 config => {
-  var cacheStore = { }
+  let cacheStore = { }
 
-  var getCacheEntry = args => {
-    var { cacheId } = args
+  let getCacheEntry = args => {
+    let { cacheId } = args
 
     if(cacheStore[cacheId]) {
-      var streamable = cacheStore[cacheId]
+      let streamable = cacheStore[cacheId]
 
       if(!streamable.isClosed) return streamable
 
@@ -41,16 +41,16 @@ config => {
     return reject(error(404, 'not found'))
   }
 
-  var setCacheEntry = async(
+  let setCacheEntry = async(
   function*(args, streamable) {
-    var { cacheId } = args
+    let { cacheId } = args
 
     streamable = yield inMemoryStreamable(streamable)
     cacheStore[cacheId] = streamable
   })
 
-  var removeCacheEntry = args => {
-    var { cacheId } = args
+  let removeCacheEntry = args => {
+    let { cacheId } = args
 
     cacheStore[cacheId] = null
   }
@@ -63,27 +63,27 @@ config => {
 .simpleHandler('setCacheEntry', 'streamable', 'void')
 .simpleHandler('removeCacheEntry', 'void', 'void')
 
-var memoryCacheComponents = memoryCacheStoreBundle
+let memoryCacheComponents = memoryCacheStoreBundle
   .toHandlerComponents()
 
-var forkTable = {}
+let forkTable = {}
 
-export var memoryCacheFilter = makeCacheFilter(forkTable)
+export let memoryCacheFilter = makeCacheFilter(forkTable)
   .implement(memoryCacheComponents)
 
-export var memoryCacheInvalidationFilter = 
+export let memoryCacheInvalidationFilter = 
   makeCacheInvalidationFilter(forkTable)
   .implement(memoryCacheComponents)
 
-export var makeMemoryCacheStoreBundle = 
+export let makeMemoryCacheStoreBundle = 
   memoryCacheStoreBundle.factory()
 
-export var makeMemoryCacheFilter = memoryCacheFilter.factory()
+export let makeMemoryCacheFilter = memoryCacheFilter.factory()
 
-export var makeMemoryCacheInvalidationFilter = 
+export let makeMemoryCacheInvalidationFilter = 
   memoryCacheInvalidationFilter.factory()
 
-export var makeMemoryCacheFilters = (forkTable={}) => ({
+export let makeMemoryCacheFilters = (forkTable={}) => ({
   cacheFilter: 
     makeMemoryCacheFilter(forkTable),
     

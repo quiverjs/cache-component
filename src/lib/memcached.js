@@ -16,36 +16,36 @@ import {
 
 import Memcached from 'memcached'
 
-var promisifyMethod = (object, method) =>
+let promisifyMethod = (object, method) =>
   promisify((...args) =>
     object[method](...args))
 
-var promisifyMethods = (object, methods) =>
+let promisifyMethods = (object, methods) =>
   methods.reduce((result, method) => {
     result[method] = promisifyMethod(object, method)
     return result
   }, { })
 
-export var createMemcached = (servers, options) => {
-  var memcached = new Memcached(
+export let createMemcached = (servers, options) => {
+  let memcached = new Memcached(
     servers, options)
 
   return promisifyMethods(memcached, 
     ['get', 'set', 'replace', 'del'])
 }
 
-export var memcachedStoreBundle = handlerBundle(
+export let memcachedStoreBundle = handlerBundle(
 config => {
-  var { 
+  let { 
     memcachedServers, memcachedOptions,
     cacheExpiry=300
   } = config
 
-  var memcached = createMemcached(
+  let memcached = createMemcached(
     memcachedServers, memcachedOptions)
 
-  var getCacheEntry = args => {
-    var { cacheId } = args
+  let getCacheEntry = args => {
+    let { cacheId } = args
 
     return memcached.get(cacheId).then(
       data => {
@@ -55,16 +55,16 @@ config => {
       })
   }
 
-  var setCacheEntry = async(function*(args, streamable) {
-    var { cacheId } = args
+  let setCacheEntry = async(function*(args, streamable) {
+    let { cacheId } = args
 
-    var buffer = yield streamableToBuffer(streamable)
+    let buffer = yield streamableToBuffer(streamable)
 
     yield memcached.set(cacheId, buffer, cacheExpiry)
   })
 
-  var removeCacheEntry = args => {
-    var { cacheId } = args
+  let removeCacheEntry = args => {
+    let { cacheId } = args
 
     return memcached.del(cacheId)
   }
@@ -77,25 +77,25 @@ config => {
 .simpleHandler('setCacheEntry', 'streamable', 'void')
 .simpleHandler('removeCacheEntry', 'void', 'void')
 
-var memcachedComponents = memcachedStoreBundle
+let memcachedComponents = memcachedStoreBundle
   .toHandlerComponents()
 
-var forkTable = {}
+let forkTable = {}
 
-export var memcachedFilter = 
+export let memcachedFilter = 
   makeCacheFilter(forkTable)
   .implement(memcachedComponents)
 
-export var memcachedInvalidationFilter =
+export let memcachedInvalidationFilter =
   makeCacheInvalidationFilter(forkTable)
   .implement(memcachedComponents)
 
-export var makeMemcachedFilter = memcachedFilter.factory()
+export let makeMemcachedFilter = memcachedFilter.factory()
 
-export var makeMemcachedInvalidationFilter =
+export let makeMemcachedInvalidationFilter =
   memcachedInvalidationFilter.factory()
 
-export var makeMemcachedFilters = (forkTable={}) => ({
+export let makeMemcachedFilters = (forkTable={}) => ({
   cacheFilter: 
     makeMemcachedFilter(forkTable),
     

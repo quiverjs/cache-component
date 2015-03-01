@@ -8,10 +8,10 @@ import {
 } from 'quiver-core/component'
 
 import pathLib from 'path'
-var { join: joinPath } = pathLib
+let { join: joinPath } = pathLib
 
 import fs from 'fs'
-var { existsSync, readFileSync } = fs
+let { existsSync, readFileSync } = fs
 
 import chai from 'chai'
 import chaiAsPromised from 'chai-as-promised'
@@ -19,48 +19,48 @@ import chaiAsPromised from 'chai-as-promised'
 import { diskCacheFilters } from '../lib/cache-component.js'
 
 chai.use(chaiAsPromised)
-var should = chai.should()
-var expect = chai.expect
+let should = chai.should()
+let expect = chai.expect
 
-var cacheDir = 'temp'
+let cacheDir = 'temp'
 
 describe('disk cache filter test', () => {
-  var getCacheId = simpleHandler(
+  let getCacheId = simpleHandler(
     args => args.id, 'void', 'text')
 
-  var uppercase = simpleHandler(
+  let uppercase = simpleHandler(
     (args, text) => text.toUpperCase(),
     'text', 'text')
 
-  var greet = simpleHandler(
+  let greet = simpleHandler(
   args => {
-    var { id } = args
+    let { id } = args
     return 'Hello, ' + id
   }, 'void', 'text')
   .addMiddleware(transformFilter(uppercase, 'out'))
 
   it('sanity test', async(function*() {
-    var handler = yield greet.loadHandler({ })
+    let handler = yield greet.loadHandler({ })
     
     yield handler({ id: 'foo' })
       .should.eventually.equal('HELLO, FOO')
   }))
 
   it('basic test', async(function*() {
-    var {
+    let {
       cacheFilter, cacheInvalidationFilter 
     } = diskCacheFilters()
 
     cacheFilter.implement({ getCacheId })
 
-    var cachedGreet = greet.fork()
+    let cachedGreet = greet.fork()
       .middleware(cacheFilter)
 
-    var config = { cacheDir }
+    let config = { cacheDir }
 
-    var handler = yield cachedGreet.loadHandler(config)
+    let handler = yield cachedGreet.loadHandler(config)
 
-    var cacheFile = joinPath(cacheDir, 'foo')
+    let cacheFile = joinPath(cacheDir, 'foo')
 
     existsSync(cacheFile).should.equal(false)
 

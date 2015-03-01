@@ -5,4 +5,4 @@ quiver-cache-component
 
 Filter components to cache the result of handlers
 
-[Documentation](https://github.com/quiverjs/doc/wiki/Cache-Component)
+[Documentation](https://github.com/quiverjs/quiverjs/wiki/Cache-Component)
