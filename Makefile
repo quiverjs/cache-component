@@ -6,7 +6,7 @@ build: src
 unit-test: build clear-temp
 	mocha out/test
 
-clear-temp: temp
+clear-temp:
 	rm -rf temp/ && mkdir temp
 
 .PHONY: build build-lib build-test test
