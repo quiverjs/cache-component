@@ -1,5 +1,3 @@
-import 'quiver-core/traceur'
-
 import { async, promisify, timeout } from 'quiver-core/promise'
 
 import { 

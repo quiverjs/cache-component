@@ -1,12 +1,12 @@
-TRACEUR_FLAGS=--modules commonjs --generators parse --block-binding parse
+BABEL_FLAGS=--blacklist=es6.blockScoping,es6.constants,es6.forOf,regenerator 
 
 build: src
-	traceur --dir src/ out/ $(TRACEUR_FLAGS)
-
-unit-test: build clear-temp
-	mocha out/test
+	babel src --out-dir out $(BABEL_FLAGS)
 
 clear-temp:
-	rm -rf temp/ && mkdir temp
+	rm -r temp/ && mkdir temp
 
-.PHONY: build build-lib build-test test
+test: build clear-temp
+	mocha out/test
+
+.PHONY: build test server clear-temp

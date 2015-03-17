@@ -1,5 +1,3 @@
-import 'quiver-core/traceur'
-
 import { async, timeout } from 'quiver-core/promise'
 import { 
   simpleHandler, simpleHandlerBuilder,
