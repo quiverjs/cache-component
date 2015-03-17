@@ -5,7 +5,7 @@ import {
 } from 'quiver-core/component'
 
 import childProcess from 'child_process'
-let { spawn } = childProcess
+const { spawn } = childProcess
 
 import { 
   memoryCacheFilters, 
@@ -14,25 +14,25 @@ import {
 
 import { createMemcached } from '../lib/memcached.js'
 
-let chai = require('chai')
-let chaiAsPromised = require('chai-as-promised')
+const chai = require('chai')
+const chaiAsPromised = require('chai-as-promised')
 
 chai.use(chaiAsPromised)
-let should = chai.should()
-let expect = chai.expect
+const should = chai.should()
+const expect = chai.expect
 
-let memcachedPort = '11212'
+const memcachedPort = '11212'
 
 describe('cache filter test', () => {
-  let getCacheId = simpleHandler(
+  const getCacheId = simpleHandler(
     args => args.id, 'void', 'text')
 
-  let counterBundle = handlerBundle(
+  const counterBundle = handlerBundle(
   config => {
-    let table = { }
+    const table = { }
 
-    let increment = args => {
-      let { id } = args
+    const increment = args => {
+      const { id } = args
 
       let count = table[id] || 0
       count++
@@ -41,8 +41,8 @@ describe('cache filter test', () => {
       return id + '-' + count
     }
 
-    let reset = args => {
-      let { id, count=0 } = args
+    const reset = args => {
+      const { id, count=0 } = args
 
       table[id] = count
     }
@@ -54,13 +54,13 @@ describe('cache filter test', () => {
   .simpleHandler('increment', 'void', 'text')
   .simpleHandler('reset', 'void', 'void')
 
-  let { increment, reset } = counterBundle.toHandlerComponents()
+  const { increment, reset } = counterBundle.toHandlerComponents()
 
   it('sanity test', async(function*() {
-    let config = { }
+    const config = { }
 
-    let counterHandler = yield increment.loadHandler(config)
-    let resetHandler = yield reset.loadHandler(config)
+    const counterHandler = yield increment.loadHandler(config)
+    const resetHandler = yield reset.loadHandler(config)
 
     yield counterHandler({id: 'foo'})
       .should.eventually.equal('foo-1')
@@ -84,7 +84,7 @@ describe('cache filter test', () => {
   }))
 
   it('memory cache test', async(function*() {
-    let {
+    const {
       cacheFilter,
       cacheInvalidationFilter
     } = memoryCacheFilters()
@@ -92,16 +92,16 @@ describe('cache filter test', () => {
     cacheFilter.implement({ getCacheId })
     cacheInvalidationFilter.implement({ getCacheId })
 
-    let { increment, reset } = counterBundle.fork()
+    const { increment, reset } = counterBundle.fork()
       .toHandlerComponents()
 
     increment.middleware(cacheFilter)
     reset.middleware(cacheInvalidationFilter)
 
-    let config = { }
+    const config = { }
 
-    let counterHandler = yield increment.loadHandler(config)
-    let resetHandler = yield reset.loadHandler(config)
+    const counterHandler = yield increment.loadHandler(config)
+    const resetHandler = yield reset.loadHandler(config)
 
     yield counterHandler({id: 'foo'})
       .should.eventually.equal('foo-1')
@@ -128,7 +128,7 @@ describe('cache filter test', () => {
   }))
 
   it('memcached test', async(function*() {
-    let server = spawn('memcached', ['-p', memcachedPort], {
+    const server = spawn('memcached', ['-p', memcachedPort], {
       stdio: 'ignore'
     })
 
@@ -139,29 +139,29 @@ describe('cache filter test', () => {
         'failed to start memcached test server')
     })
 
-    let {
+    const {
       cacheFilter, cacheInvalidationFilter 
     } = memcachedFilters()
 
     cacheFilter.implement({ getCacheId })
     cacheInvalidationFilter.implement({ getCacheId })
 
-    let { increment, reset } = counterBundle.fork()
+    const { increment, reset } = counterBundle.fork()
       .toHandlerComponents()
 
     increment.middleware(cacheFilter)
     reset.middleware(cacheInvalidationFilter)
 
-    let memcachedServers = '127.0.0.1:' + memcachedPort
+    const memcachedServers = '127.0.0.1:' + memcachedPort
 
-    let memcached = createMemcached(memcachedServers)
+    const memcached = createMemcached(memcachedServers)
 
-    let config = { 
+    const config = { 
       memcachedServers
     }
 
-    let counterHandler = yield increment.loadHandler(config)
-    let resetHandler = yield reset.loadHandler(config)
+    const counterHandler = yield increment.loadHandler(config)
+    const resetHandler = yield reset.loadHandler(config)
 
     yield counterHandler({id: 'foo'})
       .should.eventually.equal('foo-1')
@@ -190,7 +190,7 @@ describe('cache filter test', () => {
     yield counterHandler({id: 'bar'})
       .should.eventually.equal('bar-1')
 
-    let counterHandler2 = yield increment.loadHandler(config)
+    const counterHandler2 = yield increment.loadHandler(config)
 
     yield counterHandler2({id: 'foo'})
       .should.eventually.equal('foo-6')

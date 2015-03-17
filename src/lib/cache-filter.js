@@ -7,23 +7,23 @@ import {
   argsBuilderFilter, simpleHandlerLoader
 } from 'quiver-core/component'
 
-let getCacheId = abstractHandler('getCacheId')
+const getCacheId = abstractHandler('getCacheId')
   .setLoader(simpleHandlerLoader('void', 'text'))
 
-let getCacheEntry = abstractHandler('getCacheEntry')
+const getCacheEntry = abstractHandler('getCacheEntry')
   .setLoader(simpleHandlerLoader('void', 'streamable'))
 
-let setCacheEntry = abstractHandler('setCacheEntry')
+const setCacheEntry = abstractHandler('setCacheEntry')
   .setLoader(simpleHandlerLoader('streamable', 'void'))
 
-let removeCacheEntry = abstractHandler('removeCacheEntry')
+const removeCacheEntry = abstractHandler('removeCacheEntry')
   .setLoader(simpleHandlerLoader('void', 'void'))
 
-let _cacheId = Symbol('cacheId')
+const _cacheId = Symbol('cacheId')
 
-let cacheIdFilter = argsBuilderFilter(
+const cacheIdFilter = argsBuilderFilter(
 config => {
-  let { getCacheId } = config
+  const { getCacheId } = config
 
   return async(function*(args) {
     args[_cacheId] = yield getCacheId(copy(args))
@@ -33,17 +33,17 @@ config => {
 })
 .inputHandlers({ getCacheId })
 
-export let cacheFilter = streamFilter(
+export const cacheFilter = streamFilter(
 (config, handler) => {
-  let {
+  const {
     getCacheId, getCacheEntry, setCacheEntry
   } = config
 
   return async(function*(args, inputStreamable) {
-    let cacheId = args[_cacheId]
+    const cacheId = args[_cacheId]
 
     try {
-      let cachedResult = yield getCacheEntry({cacheId})
+      const cachedResult = yield getCacheEntry({cacheId})
       return cachedResult
 
     } catch(err) {
@@ -67,12 +67,12 @@ export let cacheFilter = streamFilter(
   getCacheEntry, setCacheEntry
 })
 
-export let cacheInvalidationFilter = argsBuilderFilter(
+export const cacheInvalidationFilter = argsBuilderFilter(
 (config) => {
-  let { removeCacheEntry } = config
+  const { removeCacheEntry } = config
 
   return async(function*(args) {
-    let cacheId = args[_cacheId]
+    const cacheId = args[_cacheId]
 
     yield removeCacheEntry({ cacheId })
 
@@ -84,12 +84,12 @@ export let cacheInvalidationFilter = argsBuilderFilter(
 .middleware(cacheIdFilter)
 .inputHandlers({ removeCacheEntry })
 
-export let makeCacheFilter = cacheFilter.factory()
+export const makeCacheFilter = cacheFilter.factory()
 
-export let makeCacheInvalidationFilter = 
+export const makeCacheInvalidationFilter = 
   cacheInvalidationFilter.factory()
 
-export let makeCacheFilters = (forkTable={}) => ({
+export const makeCacheFilters = (forkTable={}) => ({
   cacheFilter: 
     makeCacheFilter(forkTable),
 

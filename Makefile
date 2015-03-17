@@ -4,7 +4,7 @@ build: src
 	babel src --out-dir out $(BABEL_FLAGS)
 
 clear-temp:
-	rm -r temp/ && mkdir temp
+	rm -rf temp/ && mkdir temp
 
 test: build clear-temp
 	mocha out/test

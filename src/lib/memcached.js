@@ -16,36 +16,36 @@ import {
 
 import Memcached from 'memcached'
 
-let promisifyMethod = (object, method) =>
+const promisifyMethod = (object, method) =>
   promisify((...args) =>
     object[method](...args))
 
-let promisifyMethods = (object, methods) =>
+const promisifyMethods = (object, methods) =>
   methods.reduce((result, method) => {
     result[method] = promisifyMethod(object, method)
     return result
   }, { })
 
-export let createMemcached = (servers, options) => {
-  let memcached = new Memcached(
+export const createMemcached = (servers, options) => {
+  const memcached = new Memcached(
     servers, options)
 
   return promisifyMethods(memcached, 
     ['get', 'set', 'replace', 'del'])
 }
 
-export let memcachedStoreBundle = handlerBundle(
+export const memcachedStoreBundle = handlerBundle(
 config => {
-  let { 
+  const { 
     memcachedServers, memcachedOptions,
     cacheExpiry=300
   } = config
 
-  let memcached = createMemcached(
+  const memcached = createMemcached(
     memcachedServers, memcachedOptions)
 
-  let getCacheEntry = args => {
-    let { cacheId } = args
+  const getCacheEntry = args => {
+    const { cacheId } = args
 
     return memcached.get(cacheId).then(
       data => {
@@ -55,16 +55,16 @@ config => {
       })
   }
 
-  let setCacheEntry = async(function*(args, streamable) {
-    let { cacheId } = args
+  const setCacheEntry = async(function*(args, streamable) {
+    const { cacheId } = args
 
-    let buffer = yield streamableToBuffer(streamable)
+    const buffer = yield streamableToBuffer(streamable)
 
     yield memcached.set(cacheId, buffer, cacheExpiry)
   })
 
-  let removeCacheEntry = args => {
-    let { cacheId } = args
+  const removeCacheEntry = args => {
+    const { cacheId } = args
 
     return memcached.del(cacheId)
   }
@@ -77,25 +77,25 @@ config => {
 .simpleHandler('setCacheEntry', 'streamable', 'void')
 .simpleHandler('removeCacheEntry', 'void', 'void')
 
-let memcachedComponents = memcachedStoreBundle
+const memcachedComponents = memcachedStoreBundle
   .toHandlerComponents()
 
-let forkTable = {}
+const forkTable = {}
 
-export let memcachedFilter = 
+export const memcachedFilter = 
   makeCacheFilter(forkTable)
   .implement(memcachedComponents)
 
-export let memcachedInvalidationFilter =
+export const memcachedInvalidationFilter =
   makeCacheInvalidationFilter(forkTable)
   .implement(memcachedComponents)
 
-export let makeMemcachedFilter = memcachedFilter.factory()
+export const makeMemcachedFilter = memcachedFilter.factory()
 
-export let makeMemcachedInvalidationFilter =
+export const makeMemcachedInvalidationFilter =
   memcachedInvalidationFilter.factory()
 
-export let makeMemcachedFilters = (forkTable={}) => ({
+export const makeMemcachedFilters = (forkTable={}) => ({
   cacheFilter: 
     makeMemcachedFilter(forkTable),
     

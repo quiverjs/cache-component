@@ -4,10 +4,10 @@ import { async, promisify, reject } from 'quiver-core/promise'
 import { fileStreamable, fileWriteStream } from 'quiver-core/file-stream'
 
 import pathLib from 'path'
-let { join: joinPath } = pathLib
+const { join: joinPath } = pathLib
 
 import fs from 'fs'
-let { rename, symlink, unlink } = fs
+const { rename, symlink, unlink } = fs
 
 import { 
   makeCacheFilter, makeCacheInvalidationFilter
@@ -20,45 +20,45 @@ import {
   inputHandlerMiddleware
 } from 'quiver-core/component'
 
-let moveFile = promisify(rename)
-let linkFile = promisify(symlink)
-let removeFile = promisify(unlink)
+const moveFile = promisify(rename)
+const linkFile = promisify(symlink)
+const removeFile = promisify(unlink)
 
-let cacheFileStatsHandler = fileStatsHandler()
+const cacheFileStatsHandler = fileStatsHandler()
   .configAlias({
     dirPath: 'cacheDir'
   })
 
-let cachePathFilter = argsBuilderFilter(
+const cachePathFilter = argsBuilderFilter(
 config => {
-  let { cacheDir } = config
+  const { cacheDir } = config
 
   return args => {
-    let cacheId = args.cacheId
+    const cacheId = args.cacheId
     args.cachePath = joinPath(cacheDir, cacheId)
   }
 })
 
-export let diskCacheStoreBundle = handlerBundle(
+export const diskCacheStoreBundle = handlerBundle(
 config => {
-  let { cacheDir, getFileStats } = config
+  const { cacheDir, getFileStats } = config
 
-  let getCacheEntry = async(function*(args) {
-    let { cacheId, cachePath } = args
+  const getCacheEntry = async(function*(args) {
+    const { cacheId, cachePath } = args
 
-    let fileStats = yield getFileStats({path: cacheId})
+    const fileStats = yield getFileStats({path: cacheId})
 
-    let streamable = yield fileStreamable(cachePath, fileStats)
+    const streamable = yield fileStreamable(cachePath, fileStats)
     streamable.reusable = false
 
     return streamable
   })
 
-  let setCacheEntry = async(function*(args, streamable) {
-    let { cachePath } = args
+  const setCacheEntry = async(function*(args, streamable) {
+    const { cachePath } = args
 
     if(streamable.toFilePath) {
-      let filePath = yield streamable.toFilePath()
+      const filePath = yield streamable.toFilePath()
 
       if(streamable.tempFile) {
         yield moveFile(filePath, cachePath)
@@ -70,13 +70,13 @@ config => {
       }
     }
 
-    let readStream = yield streamable.toStream()
-    let writeStream = yield fileWriteStream(cachePath)
+    const readStream = yield streamable.toStream()
+    const writeStream = yield fileWriteStream(cachePath)
     yield pipeStream(readStream, writeStream)
   })
 
-  let removeCacheEntry = args => {
-    let { cachePath } = args
+  const removeCacheEntry = args => {
+    const { cachePath } = args
 
     return removeFile(cachePath)
   }
@@ -90,28 +90,28 @@ config => {
 .simpleHandler('removeCacheEntry', 'void', 'void')
 .inputHandler(cacheFileStatsHandler, 'getFileStats')
 
-let diskCacheComponents = diskCacheStoreBundle
+const diskCacheComponents = diskCacheStoreBundle
   .toHandlerComponents()
 
 for(let key in diskCacheComponents) {
   diskCacheComponents[key].middleware(cachePathFilter)
 }
 
-let forkTable = {}
+const forkTable = {}
 
-export let diskCacheFilter = makeCacheFilter(forkTable)
+export const diskCacheFilter = makeCacheFilter(forkTable)
   .implement(diskCacheComponents)
 
-export let diskCacheInvalidationFilter = 
+export const diskCacheInvalidationFilter = 
   makeCacheInvalidationFilter(forkTable)
   .implement(diskCacheComponents)
 
-export let makeDiskCacheFilter = diskCacheFilter.factory()
+export const makeDiskCacheFilter = diskCacheFilter.factory()
 
-export let makeDiskCacheInvalidationFilter = 
+export const makeDiskCacheInvalidationFilter = 
   diskCacheInvalidationFilter.factory()
 
-export let makeDiskCacheFilters = (forkTable={}) => ({
+export const makeDiskCacheFilters = (forkTable={}) => ({
   cacheFilter: 
     makeDiskCacheFilter(forkTable),
 
