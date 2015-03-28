@@ -1,10 +1,10 @@
-import { error } from 'quiver-core/error'
-import { reject, resolve, async } from 'quiver-core/promise'
-import { reuseStream, reuseStreamable } from 'quiver-core/stream-util'
+import { error } from 'quiver/error'
+import { reject, resolve, async } from 'quiver/promise'
+import { reuseStream, reuseStreamable } from 'quiver/stream-util'
 
 import { 
   handleableBuilder, streamHandlerBuilder, handlerBundle 
-} from 'quiver-core/component'
+} from 'quiver/component'
 
 import {
   makeCacheFilter, makeCacheInvalidationFilter

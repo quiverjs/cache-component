@@ -6,20 +6,20 @@
   },
   "name": "quiver-cache-component",
   "desription": "Filter components to cache the result of handlers",
-  "version": "1.3.1",
+  "version": "1.3.2",
   "homepage": "https://github.com/quiverjs/quiver-cache-component",
   "repository": {
     "url": "git@github.com:quiverjs/quiver-cache-component.git"
   },
   "dependencies": {
     "memcached": "^2.1.0",
-    "quiver-core": "~1.3.0",
-    "quiver-file-component": "~1.3.1"
+    "quiver": "~1.3.0",
+    "quiver-file-component": "~1.3.2"
   },
   "devDependencies": {
-    "babel": "~4.7.13",
     "chai": "^2.1.2",
     "mocha": "^2.2.1",
+    "babel": "~4.7.16",
     "chai-as-promised": "^4.3.0"
   },
   "bugs": {
@@ -36,6 +36,6 @@
     "prepublish": "make build"
   },
   "engines": {
-    "iojs": "^1.5.1"
+    "iojs": "^1.6.2"
   }
 }

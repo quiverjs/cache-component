@@ -1,7 +1,7 @@
-import { pipeStream } from 'quiver-core/stream-util'
+import { pipeStream } from 'quiver/stream-util'
 import { fileStatsHandler } from 'quiver-file-component'
-import { async, promisify, reject } from 'quiver-core/promise'
-import { fileStreamable, fileWriteStream } from 'quiver-core/file-stream'
+import { async, promisify, reject } from 'quiver/promise'
+import { fileStreamable, fileWriteStream } from 'quiver/file-stream'
 
 import pathLib from 'path'
 const { join: joinPath } = pathLib
@@ -18,7 +18,7 @@ import {
   argsBuilderFilter,
   configAliasMiddleware,
   inputHandlerMiddleware
-} from 'quiver-core/component'
+} from 'quiver/component'
 
 const moveFile = promisify(rename)
 const linkFile = promisify(symlink)

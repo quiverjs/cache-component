@@ -1,11 +1,11 @@
-import { copy } from 'quiver-core/object'
-import { async } from 'quiver-core/promise'
-import { reuseStreamable } from 'quiver-core/stream-util'
+import { copy } from 'quiver/object'
+import { async } from 'quiver/promise'
+import { reuseStreamable } from 'quiver/stream-util'
 
 import { 
   abstractHandler, streamFilter, 
   argsBuilderFilter, simpleHandlerLoader
-} from 'quiver-core/component'
+} from 'quiver/component'
 
 const getCacheId = abstractHandler('getCacheId')
   .setLoader(simpleHandlerLoader('void', 'text'))

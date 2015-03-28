@@ -1,8 +1,8 @@
-import { async, timeout } from 'quiver-core/promise'
+import { async, timeout } from 'quiver/promise'
 import { 
   simpleHandler, simpleHandlerBuilder,
   handlerBundle
-} from 'quiver-core/component'
+} from 'quiver/component'
 
 import childProcess from 'child_process'
 const { spawn } = childProcess

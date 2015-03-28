@@ -1,9 +1,9 @@
-import { async, promisify, timeout } from 'quiver-core/promise'
+import { async, promisify, timeout } from 'quiver/promise'
 
 import { 
   simpleHandler, simpleHandlerBuilder,
   handlerBundle, transformFilter
-} from 'quiver-core/component'
+} from 'quiver/component'
 
 import pathLib from 'path'
 const { join: joinPath } = pathLib

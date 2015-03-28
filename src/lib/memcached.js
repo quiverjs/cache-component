@@ -1,14 +1,14 @@
-import { error } from 'quiver-core/error'
-import { promisify, async, reject } from 'quiver-core/promise'
+import { error } from 'quiver/error'
+import { promisify, async, reject } from 'quiver/promise'
 
 import { 
   streamableToBuffer, 
   bufferToStreamable 
-} from 'quiver-core/stream-util'
+} from 'quiver/stream-util'
 
 import {
   handlerBundle
-} from 'quiver-core/component'
+} from 'quiver/component'
 
 import { 
   makeCacheFilter, makeCacheInvalidationFilter
